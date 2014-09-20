@@ -9,7 +9,7 @@ class Solvable {
   static String readFile(String file_name) {
     String cwd = System.getProperty("user.dir");
     try {
-      byte[] content = Files.readAllBytes(Paths.get(cwd, "\\rubik", file_name));
+      byte[] content = Files.readAllBytes(Paths.get(cwd, file_name));
       return new String(content);
     }
     catch (IOException e){
