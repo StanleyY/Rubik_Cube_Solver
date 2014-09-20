@@ -10,7 +10,7 @@ class Solvable {
     String cwd = System.getProperty("user.dir");
     try {
       byte[] content = Files.readAllBytes(Paths.get(cwd, file_name));
-      return new String(content);
+      return new String(content).replaceAll("\\s+", ""); //Return String with whitespace removed.
     }
     catch (IOException e){
       System.out.println(e.toString());
