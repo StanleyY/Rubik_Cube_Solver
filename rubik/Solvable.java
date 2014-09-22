@@ -18,7 +18,7 @@ OBW: 232
 OGW: 237
 */
 
-  static void PrettyPrint(char[] input) {
+  static void prettyPrint(char[] input) {
   // Prints the cube in a more human readable format.
     int i = 0;
     while (i < 9){
@@ -54,15 +54,15 @@ OGW: 237
     return null;
   }
 
-  static boolean PermutationTest() {
+  static boolean permutationTest() {
     return true;
   }
 
-  static boolean CornerTest() {
+  static boolean cornerTest() {
     return true;
   }
 
-  static boolean EdgeTest() {
+  static boolean edgeTest() {
     return true;
   }
   public static void main(String[] args) {
@@ -73,7 +73,7 @@ OGW: 237
     String file_name = args[0];
     String input = readFile(file_name);
     char[] charArray = input.toCharArray();
-    PrettyPrint(charArray);
+    prettyPrint(charArray);
     System.out.println(input);
   }
 }
