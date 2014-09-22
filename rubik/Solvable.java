@@ -84,7 +84,8 @@ W = 5
 
 
   static boolean cornerTest(char[] cube) {
-    int[] initial = new int[]{12, 30, 15, 33, 11, 29, 47, 53};
+                              // Y        B      G       W
+    int[] initial = new int[] {12, 30, 15, 33, 11, 29, 47, 53};
     int[] inverted = new int[]{14, 32, 17, 35, 9, 27, 45, 51};
     int total = 0;
     char val = '0';
