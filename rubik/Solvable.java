@@ -16,6 +16,14 @@ OGY: 239
 OYB: 234
 OBW: 232
 OGW: 237
+
+R = 0
+G = 1
+Y = 2
+B = 3
+O = 4
+W = 5
+
 */
 
   static void prettyPrint(char[] input) {
@@ -75,31 +83,41 @@ OGW: 237
   }
 
 
-  static boolean cornerTest(char[][] corners) {
-  // Index of Red or Orange on a corner indicates value needed.
+  static boolean cornerTest(char[] cube) {
+    int[] initial = new int[]{12, 30, 15, 33, 11, 29, 47, 53};
+    int[] inverted = new int[]{14, 32, 17, 35, 9, 27, 45, 51};
     int total = 0;
-    for(int i = 0; i < corners.length; i++){
-      int index = new String(corners[i]).indexOf('R');
-      if (index > -1){
-        total += index;
+    char val = '0';
+
+    for (int i: initial){
+      val = cube[i];
+      if (val == 'R'){
+        total += 1;
+        System.out.printf("Cube Index: %d, Color: R\n", i);
+        System.out.printf("Current Total: %d\n", total);
       }
-      else{ // Inversed values for Orange.
-        index = new String(corners[i]).indexOf('O');
-        if (index > -1){
-          if (index == 0){
-          }
-          else if (index == 1) {
-                total += 2;
-              } else {
-                total += 1;
-              }
-        }
-        else{ // Invalid Corner, no Red or Orange.
-          return false;
-        }
+      else if (val == 'O'){
+        total += 2;
+        System.out.printf("Cube Index: %d, Color: O\n", i);
+        System.out.printf("Current Total: %d\n", total);
+      }
+    }
+    System.out.println("Starting Inverted");
+    for (int i: inverted){
+      val = cube[i];
+      if (val == 'R'){
+        total += 2;
+        System.out.printf("Cube Index: %d, Color: R\n", i);
+        System.out.printf("Current Total: %d\n", total);
+      }
+      else if (val == 'O'){
+        total += 1;
+        System.out.printf("Cube Index: %d, Color: O\n", i);
+        System.out.printf("Current Total: %d\n", total);
       }
     }
 
+    System.out.printf("Total is %d.\n", total);
     if (total % 3 == 0){ return true;}
     else {return false;}
   }
@@ -124,7 +142,7 @@ OGW: 237
     for (int i = 0; i < corners.length; i++){
       System.out.println(corners[i]);
     }
-    System.out.println(cornerTest(corners));
+    System.out.println(cornerTest(charArray));
   }
 
 }
