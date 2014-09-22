@@ -93,31 +93,21 @@ W = 5
       val = cube[i];
       if (val == 'R'){
         total += 1;
-        System.out.printf("Cube Index: %d, Color: R\n", i);
-        System.out.printf("Current Total: %d\n", total);
       }
       else if (val == 'O'){
         total += 2;
-        System.out.printf("Cube Index: %d, Color: O\n", i);
-        System.out.printf("Current Total: %d\n", total);
       }
     }
-    System.out.println("Starting Inverted");
     for (int i: inverted){
       val = cube[i];
       if (val == 'R'){
         total += 2;
-        System.out.printf("Cube Index: %d, Color: R\n", i);
-        System.out.printf("Current Total: %d\n", total);
       }
       else if (val == 'O'){
         total += 1;
-        System.out.printf("Cube Index: %d, Color: O\n", i);
-        System.out.printf("Current Total: %d\n", total);
       }
     }
 
-    System.out.printf("Total is %d.\n", total);
     if (total % 3 == 0){ return true;}
     else {return false;}
   }
@@ -137,12 +127,8 @@ W = 5
     String input = readFile(file_name);
     char[] charArray = input.toCharArray();
     prettyPrint(charArray);
-    System.out.println(input);
-    char[][] corners = getCorners(charArray);
-    for (int i = 0; i < corners.length; i++){
-      System.out.println(corners[i]);
-    }
-    System.out.println(cornerTest(charArray));
+    System.out.printf("Corner Test: %s\n", cornerTest(charArray));
   }
+
 
 }
