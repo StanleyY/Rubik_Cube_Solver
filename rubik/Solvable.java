@@ -42,11 +42,27 @@ OGW: 237
     }
   }
 
+
+  static char[][] getCorners(char[] input) {
+    char[][] output = new char[8][3];
+    int i = 0;                                              // Goal State Values
+    output[0] = new char[]{input[6], input[12], input[11]}; // RYG
+    output[1] = new char[]{input[8], input[15], input[14]}; // RBY
+    output[2] = new char[]{input[2], input[53], input[17]}; // RWB
+    output[3] = new char[]{input[0], input[9], input[51]};  // RGW
+    output[4] = new char[]{input[36], input[30], input[29]};// OYG
+    output[5] = new char[]{input[38], input[33], input[32]};// OBY
+    output[6] = new char[]{input[44], input[47], input[35]};// OWB
+    output[7] = new char[]{input[42], input[27], input[45]};// OGW
+    return output;
+  }
+
+
   static String readFile(String file_name) {
     String cwd = System.getProperty("user.dir");
     try {
       byte[] content = Files.readAllBytes(Paths.get(cwd, file_name));
-      return new String(content).replaceAll("\\s+", ""); //Return String with whitespace removed.
+      return new String(content).replaceAll("\\s+", ""); // Removed whitespace.
     }
     catch (IOException e){
       System.out.println(e.toString());
@@ -58,13 +74,42 @@ OGW: 237
     return true;
   }
 
-  static boolean cornerTest() {
-    return true;
+
+  static boolean cornerTest(char[][] corners) {
+  // Index of Red or Orange on a corner indicates value needed.
+    int total = 0;
+    for(int i = 0; i < corners.length; i++){
+      int index = new String(corners[i]).indexOf('R');
+      if (index > -1){
+        total += index;
+      }
+      else{ // Inversed values for Orange.
+        index = new String(corners[i]).indexOf('O');
+        if (index > -1){
+          if (index == 0){
+          }
+          else if (index == 1) {
+                total += 2;
+              } else {
+                total += 1;
+              }
+        }
+        else{ // Invalid Corner, no Red or Orange.
+          return false;
+        }
+      }
+    }
+
+    if (total % 3 == 0){ return true;}
+    else {return false;}
   }
+
 
   static boolean edgeTest() {
     return true;
   }
+
+
   public static void main(String[] args) {
     if (args.length == 0) {
       System.out.println("Please Input Filename.");
@@ -75,5 +120,11 @@ OGW: 237
     char[] charArray = input.toCharArray();
     prettyPrint(charArray);
     System.out.println(input);
+    char[][] corners = getCorners(charArray);
+    for (int i = 0; i < corners.length; i++){
+      System.out.println(corners[i]);
+    }
+    System.out.println(cornerTest(corners));
   }
+
 }
