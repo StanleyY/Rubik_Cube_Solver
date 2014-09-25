@@ -1,8 +1,10 @@
 package rubik;
 
-import java.util.Arrays; //REMOVE THIS SHIT
+import java.util.Arrays;
 import java.nio.file.*;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.*;
 
 class Solvable {
 
@@ -26,29 +28,108 @@ W = 5
 
 */
 
-  static void prettyPrint(char[] input) {
-  // Prints the cube in a more human readable format.
+  static boolean basicChecks(char[] input){
+    String colors = "RGBYOW";
+    HashMap<String, Integer> occurances = new HashMap<String, Integer>();
     int i = 0;
-    while (i < 9){
-      System.out.printf("\t ");
-      System.out.printf(Arrays.toString(Arrays.copyOfRange(input,i, i+3)));
-      System.out.printf("\n");
-      i = i+3;
+    for (char c: colors.toCharArray()){
+      occurances.put(""+ c, 0);
     }
 
-    while (i < 36){
-      System.out.printf(Arrays.toString(Arrays.copyOfRange(input,i, i+9)));
-      System.out.printf("\n");
-      i = i+9;
+    if (input.length != 54) return false;
+
+    String s = "";
+    for (char c: input){
+      s = "" + c;
+      if (occurances.get(s) != null) {
+        occurances.put(s, occurances.get(s) + 1);
+      }
+      else {
+        return false;
+      }
     }
 
-    while (i < 54){
-      System.out.printf("\t ");
-      System.out.printf(Arrays.toString(Arrays.copyOfRange(input,i, i+3)));
-      System.out.printf("\n");
-      i = i+3;
+    Iterator it = occurances.entrySet().iterator();
+    while (it.hasNext()) {
+        Map.Entry pairs = (Map.Entry)it.next();
+        if (pairs.getValue() != 9) return false;
+        it.remove();
+    }
+
+    String faces = new String(new char[]{input[4],input[19],input[22],input[25],input[40],input[49]});
+    if (!faces.equals("RGYBOW")) return false;
+
+    System.out.println("VALID");
+    return true;
+  }
+
+
+  static char[][] generateCube(char[] input){
+    char[][] output = new char[6][9];
+    int index = 0;
+    int j;
+    int x = 0;
+    for (int i = 0; i < 6; i++){
+      j = 0;
+      if (i < 1 || i > 3) {
+        for (; j < 9; j++) {
+          output[i][j] = input[index];
+          index++;
+        }
+      }
+      else{
+        for (j = x; j < x+3; j++){
+          output[i][j] = input[index];
+          index++;
+        }
+        if(i > 2 && index < 36){
+          i = 0;
+          x += 3;
+        }
+      }
+    }
+    for (char[] a : output){
+      System.out.println(new String(a));
+    }
+    return output;
+  }
+
+
+  static void printCube(char[][] input) {
+  // Prints the cube in a more human readable format.
+  System.out.printf("\n   ");
+  int i = 0;
+  while (i < 9){
+    if(i % 3 == 0) System.out.printf("\n   ");
+    System.out.printf("%c", input[0][i]);
+    i++;
+  }
+
+  i = 1;
+  int j = 0;
+  while (j < 9){
+    System.out.printf("\n");
+    while (i < 4){
+      System.out.printf("%c", input[i][j]);
+      j++;
+      if (j % 3 == 0) {
+        j = j - 3;
+        i++;
+      }
+    }
+    j=j+3;
+    i = 1;
+  }
+
+  for (int x: new int[]{4, 5}){
+    i = 0;
+    for (char c : input[x]){
+      if(i % 3 == 0) System.out.printf("\n   ");
+      System.out.printf("%c", c);
+      i++;
     }
   }
+}
 
 
   static char[][] getCorners(char[] input) {
@@ -65,18 +146,6 @@ W = 5
     return output;
   }
 
-
-  static String readFile(String file_name) {
-    String cwd = System.getProperty("user.dir");
-    try {
-      byte[] content = Files.readAllBytes(Paths.get(cwd, file_name));
-      return new String(content).replaceAll("\\s+", ""); // Removed whitespace.
-    }
-    catch (IOException e){
-      System.out.println(e.toString());
-    }
-    return null;
-  }
 
   static boolean permutationTest() {
     return true;
@@ -119,16 +188,33 @@ W = 5
   }
 
 
-  public static void main(String[] args) {
-    if (args.length == 0) {
+  public static void main(String[] args) throws IOException{
+    if (args.length < 1) {
       System.out.println("Please Input Filename.");
       System.exit(1);
     }
-    String file_name = args[0];
-    String input = readFile(file_name);
-    char[] charArray = input.toCharArray();
-    prettyPrint(charArray);
-    System.out.printf("Corner Test: %s\n", cornerTest(charArray));
+    FileInputStream fs = null;
+    char[][] cube = null;
+
+    try{
+      fs = new FileInputStream(args[0]);
+      byte[] buffer = new byte[fs.available()];
+      fs.read(buffer);
+      char[] temp = new String(buffer).replaceAll("\\s+", "").toCharArray(); //Remove whitespace
+      if (basicChecks(temp)) {
+        System.out.println(temp);
+        cube = generateCube(temp);
+        printCube(cube);
+      }
+      else{
+        System.out.println(false);
+        System.exit(1);
+      }
+    }catch(Exception e){
+      e.printStackTrace();
+    }finally{
+      if(fs != null) fs.close();
+    }
   }
 
 
