@@ -151,29 +151,18 @@ W = 5
   }
 
 
-  static boolean cornerTest(char[] cube) {
-                              // Y        B      G       W
-    int[] initial = new int[] {12, 30, 15, 33, 11, 29, 47, 53};
-    int[] inverted = new int[]{14, 32, 17, 35, 9, 27, 45, 51};
+  static boolean cornerTest(char[][] cube) {
     int total = 0;
     char val = '0';
-
-    for (int i: initial){
-      val = cube[i];
-      if (val == 'R'){
-        total += 1;
-      }
-      else if (val == 'O'){
-        total += 2;
-      }
-    }
-    for (int i: inverted){
-      val = cube[i];
-      if (val == 'R'){
-        total += 2;
-      }
-      else if (val == 'O'){
-        total += 1;
+    int[] indexes = new int[]{0, 2, 6, 8};
+    for (int i: new int[]{1, 2, 3, 5}){
+      for (int index: indexes){
+        if (cube[i][index] == 'R' || cube[i][index] == 'O'){
+          if (index == 2 || index == 6){
+            total += 1;
+          }
+          else total += 2;
+        }
       }
     }
 
@@ -240,7 +229,7 @@ W = 5
 
   public static void runTests(char[][] cube){
     //permutationTest(cube);
-    //cornerTest(cube);
+    System.out.println("Corner Parity: " + cornerTest(cube));
     System.out.println("Edge Parity: " + edgeTest(cube));
   }
 
