@@ -142,7 +142,6 @@ W = 5
       output[i] = keys.indexOf(temp);
     }
 
-    //System.out.println(Arrays.toString(output));
     return output;
   }
 
@@ -164,7 +163,6 @@ W = 5
       output[i] = keys.indexOf(temp);
     }
 
-    System.out.println(Arrays.toString(output));
     return output;
   }
 
@@ -290,7 +288,6 @@ W = 5
       char[] temp = new String(buffer).replaceAll("\\s+", "").toCharArray(); //Remove whitespace
       if (basicChecks(temp)) {
         cube = generateCube(temp);
-        printCube(cube);
         runTests(cube);
       }
       else{
