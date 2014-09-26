@@ -7,18 +7,7 @@ import java.io.IOException;
 import java.util.*;
 
 class Solvable {
-
-// Corners char values
 /*
-RGY: 242
-RYB: 237
-RBW: 235
-RWG: 240
-OGY: 239
-OYB: 234
-OBW: 232
-OGW: 237
-
 R = 0
 G = 1
 Y = 2
@@ -131,23 +120,76 @@ W = 5
 }
 
 
-  static char[][] getCorners(char[] input) {
-    char[][] output = new char[8][3];
-    int i = 0;                                              // Goal State Values
-    output[0] = new char[]{input[6], input[12], input[11]}; // RYG
-    output[1] = new char[]{input[8], input[15], input[14]}; // RBY
-    output[2] = new char[]{input[2], input[53], input[17]}; // RWB
-    output[3] = new char[]{input[0], input[9], input[51]};  // RGW
-    output[4] = new char[]{input[36], input[30], input[29]};// OYG
-    output[5] = new char[]{input[38], input[33], input[32]};// OBY
-    output[6] = new char[]{input[44], input[47], input[35]};// OWB
-    output[7] = new char[]{input[42], input[27], input[45]};// OGW
+  static int[] getCorners(char[][] cube) {
+    List<String> keys = Arrays.asList("GRW", "BRW", "GRY", "BRY", "GOY", "BOY", "GOW", "BOW");
+    int[] output = new int[8];
+
+    char[][] corners = new char[][]{
+      {cube[0][0], cube[1][0], cube[5][6]},
+      {cube[0][2], cube[3][2], cube[5][8]},
+      {cube[0][6], cube[1][2], cube[2][0]},
+      {cube[0][8], cube[3][0], cube[2][2]},
+      {cube[4][0], cube[1][8], cube[2][6]},
+      {cube[4][2], cube[3][6], cube[2][8]},
+      {cube[4][6], cube[1][6], cube[5][0]},
+      {cube[4][8], cube[3][8], cube[5][2]}
+    };
+
+    String temp = "";
+    for (int i = 0; i < 8; i++){
+      Arrays.sort(corners[i]);
+      temp = new String(corners[i]);
+      output[i] = keys.indexOf(temp);
+    }
+
+    //System.out.println(Arrays.toString(output));
     return output;
   }
 
 
-  static boolean permutationTest() {
-    return true;
+  static int[] getEdges(char[][] cube){
+    List<String> keys = Arrays.asList("RW", "GR", "BR", "RY", "GW", "GY", "BY", "BW", "OY", "GO", "BO", "OW");
+    int[] output = new int[12];
+
+    char[][] edges = new char[][]{
+      {cube[0][1], cube[5][7]}, {cube[0][3], cube[1][1]}, {cube[0][5], cube[3][1]}, {cube[0][7], cube[2][1]},
+      {cube[1][3], cube[5][3]}, {cube[1][5], cube[2][3]}, {cube[2][5], cube[3][3]}, {cube[3][5], cube[5][5]},
+      {cube[4][1], cube[2][7]}, {cube[4][3], cube[1][7]}, {cube[4][5], cube[3][7]}, {cube[4][7], cube[5][1]}
+    };
+
+    String temp = "";
+    for (int i = 0; i < 12; i++){
+      Arrays.sort(edges[i]);
+      temp = new String(edges[i]);
+      output[i] = keys.indexOf(temp);
+    }
+
+    System.out.println(Arrays.toString(output));
+    return output;
+  }
+
+  static int getInversions(int[] input){
+    int inversions = 0;
+    int val = -1;
+    int size = input.length;
+    int j = 0;
+
+    for (int i = 0; i < size; i++){
+      val = input[i];
+      for (j = i; j < size; j++){
+        if (val > input[j]) {
+          inversions++;
+        }
+      }
+    }
+    return inversions;
+  }
+
+  static boolean permutationTest(char[][] cube) {
+    int[] corners = getCorners(cube);
+    int[] edges = getEdges(cube);
+    int total = getInversions(corners) + getInversions(edges);
+    return total % 2 == 0;
   }
 
 
@@ -228,7 +270,7 @@ W = 5
   }
 
   public static void runTests(char[][] cube){
-    //permutationTest(cube);
+    System.out.println("Permutation Parity: " + permutationTest(cube));
     System.out.println("Corner Parity: " + cornerTest(cube));
     System.out.println("Edge Parity: " + edgeTest(cube));
   }
