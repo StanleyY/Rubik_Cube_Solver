@@ -275,10 +275,8 @@ W = 5
     else return (face == 2) ? 4 : 0;
   }
 
-  public static void runTests(char[][] cube){
-    System.out.println("Permutation Parity: " + permutationTest(cube));
-    System.out.println("Corner Parity: " + cornerTest(cube));
-    System.out.println("Edge Parity: " + edgeTest(cube));
+  public static boolean runTests(char[][] cube){
+    return permutationTest(cube) && cornerTest(cube) && edgeTest(cube);
   }
 
   public static void main(String[] args) throws IOException{
@@ -296,7 +294,7 @@ W = 5
       char[] temp = new String(buffer).replaceAll("\\s+", "").toCharArray(); //Remove whitespace
       if (basicChecks(temp)) {
         cube = generateCube(temp);
-        runTests(cube);
+        System.out.println(runTests(cube));
       }
       else{
         System.out.println(false);
