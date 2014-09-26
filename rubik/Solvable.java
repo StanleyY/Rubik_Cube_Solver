@@ -120,20 +120,34 @@ W = 5
 }
 
 
+  static boolean checkStickers(char[][] corners){
+    List<String> invalid = Arrays.asList("RWG", "RBW", "RGY", "RYB", "OYG", "OBY", "OGW", "OWB");
+    for (char[] c: corners){
+      if (invalid.indexOf(new String(c)) != -1){
+        System.out.println("BAD CORNER: " + new String(c));
+        return false;
+      }
+    }
+    return true;
+  }
+
   static int[] getCorners(char[][] cube) {
     List<String> keys = Arrays.asList("GRW", "BRW", "GRY", "BRY", "GOY", "BOY", "GOW", "BOW");
     int[] output = new int[8];
 
     char[][] corners = new char[][]{
       {cube[0][0], cube[1][0], cube[5][6]},
-      {cube[0][2], cube[3][2], cube[5][8]},
-      {cube[0][6], cube[1][2], cube[2][0]},
+      {cube[0][2], cube[5][8], cube[3][2]},
+      {cube[0][6], cube[2][0], cube[1][2]},
       {cube[0][8], cube[3][0], cube[2][2]},
+
       {cube[4][0], cube[1][8], cube[2][6]},
-      {cube[4][2], cube[3][6], cube[2][8]},
-      {cube[4][6], cube[1][6], cube[5][0]},
+      {cube[4][2], cube[2][8], cube[3][6]},
+      {cube[4][6], cube[5][0], cube[1][6]},
       {cube[4][8], cube[3][8], cube[5][2]}
     };
+
+    if (!checkStickers(corners)) return null;
 
     String temp = "";
     for (int i = 0; i < 8; i++){
@@ -185,6 +199,7 @@ W = 5
 
   static boolean permutationTest(char[][] cube) {
     int[] corners = getCorners(cube);
+    if (corners == null) return false;
     int[] edges = getEdges(cube);
     int total = getInversions(corners) + getInversions(edges);
     return total % 2 == 0;
