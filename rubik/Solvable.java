@@ -124,7 +124,6 @@ W = 5
     List<String> invalid = Arrays.asList("RWG", "RBW", "RGY", "RYB", "OYG", "OBY", "OGW", "OWB");
     for (char[] c: corners){
       if (invalid.indexOf(new String(c)) != -1){
-        System.out.println("BAD CORNER: " + new String(c));
         return false;
       }
     }
@@ -210,9 +209,9 @@ W = 5
     int total = 0;
     char val = '0';
     int[] indexes = new int[]{0, 2, 6, 8};
-    for (int i: new int[]{1, 2, 3, 5}){
+    for (int face: new int[]{1, 2, 3, 5}){
       for (int index: indexes){
-        if (cube[i][index] == 'R' || cube[i][index] == 'O'){
+        if (cube[face][index] == 'R' || cube[face][index] == 'O'){
           if (index == 2 || index == 6){
             total += 1;
           }
@@ -234,10 +233,8 @@ W = 5
       for(int j: new int[]{3, 5}){
         face = cube[i][j];
         if(!(face == 'Y' || face == 'W')){
-          //System.out.printf("NOT X AT: %d, %d, %c\n", i, j, face);
           side = cube[j - 2][pos];
           if(side == 'Y' || side == 'W'){
-            //System.out.printf("X SIDE AT: %d, %d, %c\n", i, j, face);
             total += 1;
           }
         }
@@ -245,13 +242,10 @@ W = 5
       pos = 7; // Bottom index on Green/Blue.
     }
 
-    //System.out.println("STARTING Xs");
-
     for (int i: new int[]{2, 5}){
       for(int j: new int[]{1, 3, 5, 7}){
         face = cube[i][j];
         if(!(face == 'Y' || face == 'W')){
-          //System.out.printf("NOT X AT: %d, %d, %c\n", i, j, face);
           if (face == 'B' || face == 'G') {
             total += 1;
           }
@@ -264,7 +258,6 @@ W = 5
             }
             side = cube[sideFace(i, j)][pos];
             if(side == 'Y' || side == 'W'){
-              //System.out.printf("X SIDE AT: %d, %d, %c\n", i, j, face);
               total += 1;
             }
           }
