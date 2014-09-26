@@ -91,9 +91,6 @@ W = 5
         }
       }
     }
-    for (char[] a : output){
-      System.out.println(new String(a));
-    }
     return output;
   }
 
@@ -132,6 +129,7 @@ W = 5
       i++;
     }
   }
+  System.out.printf("\n");
 }
 
 
@@ -181,21 +179,71 @@ W = 5
       }
     }
 
-    if (total % 3 == 0){ return true;}
-    else {return false;}
+    return total % 3 == 0;
   }
 
 
   static boolean edgeTest(char [][] cube) {
+    int total = 0;
+    int pos = 1;
+    char face = '0';
+    char side = '0';
+    for (int i: new int[]{0, 4}){
+      for(int j: new int[]{3, 5}){
+        face = cube[i][j];
+        if(!(face == 'Y' || face == 'W')){
+          System.out.printf("NOT X AT: %d, %d, %c\n", i, j, face);
+          side = cube[j - 2][pos];
+          if(side == 'Y' || side == 'W'){
+            System.out.printf("X SIDE AT: %d, %d, %c\n", i, j, face);
+            total += 1;
+          }
+        }
+      }
+      pos = 7; // Bottom index on Green/Blue.
+    }
 
-    return true;
+    System.out.println("STARTING Xs");
+
+    for (int i: new int[]{2, 5}){
+      for(int j: new int[]{1, 3, 5, 7}){
+        face = cube[i][j];
+        if(!(face == 'Y' || face == 'W')){
+          System.out.printf("NOT X AT: %d, %d, %c\n", i, j, face);
+          if (face == 'B' || face == 'G') {
+            total += 1;
+          }
+          else { // Red/Yellow face, confirm if it is a Red/Yellow + Blue/Green.
+            if (i == 5 && (j == 3 || j == 5)){
+              pos = j;
+            }
+            else{
+              pos = 8 - j;
+            }
+            side = cube[sideFace(i, j)][pos];
+            if(side == 'Y' || side == 'W'){
+              System.out.printf("X SIDE AT: %d, %d, %c\n", i, j, face);
+              total += 1;
+            }
+          }
+        }
+      }
+    }
+
+    return total % 2 == 0;
   }
 
+  static int sideFace(int face, int index){
+    if (index == 3) return 1;
+    if (index == 5) return 3;
+    if (index == 1) return (face == 2) ? 0 : 4;
+    else return (face == 2) ? 4 : 0;
+  }
 
   public static void runTests(char[][] cube){
     //permutationTest(cube);
     //cornerTest(cube);
-    edgeTest(cube);
+    System.out.println("Edge Parity: " + edgeTest(cube));
   }
 
   public static void main(String[] args) throws IOException{
