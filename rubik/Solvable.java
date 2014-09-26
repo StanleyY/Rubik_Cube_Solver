@@ -190,10 +190,10 @@ W = 5
       for(int j: new int[]{3, 5}){
         face = cube[i][j];
         if(!(face == 'Y' || face == 'W')){
-          System.out.printf("NOT X AT: %d, %d, %c\n", i, j, face);
+          //System.out.printf("NOT X AT: %d, %d, %c\n", i, j, face);
           side = cube[j - 2][pos];
           if(side == 'Y' || side == 'W'){
-            System.out.printf("X SIDE AT: %d, %d, %c\n", i, j, face);
+            //System.out.printf("X SIDE AT: %d, %d, %c\n", i, j, face);
             total += 1;
           }
         }
@@ -201,13 +201,13 @@ W = 5
       pos = 7; // Bottom index on Green/Blue.
     }
 
-    System.out.println("STARTING Xs");
+    //System.out.println("STARTING Xs");
 
     for (int i: new int[]{2, 5}){
       for(int j: new int[]{1, 3, 5, 7}){
         face = cube[i][j];
         if(!(face == 'Y' || face == 'W')){
-          System.out.printf("NOT X AT: %d, %d, %c\n", i, j, face);
+          //System.out.printf("NOT X AT: %d, %d, %c\n", i, j, face);
           if (face == 'B' || face == 'G') {
             total += 1;
           }
@@ -220,7 +220,7 @@ W = 5
             }
             side = cube[sideFace(i, j)][pos];
             if(side == 'Y' || side == 'W'){
-              System.out.printf("X SIDE AT: %d, %d, %c\n", i, j, face);
+              //System.out.printf("X SIDE AT: %d, %d, %c\n", i, j, face);
               total += 1;
             }
           }
