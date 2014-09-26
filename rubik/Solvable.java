@@ -54,7 +54,6 @@ W = 5
     while (it.hasNext()) {
         Map.Entry pairs = (Map.Entry)it.next();
         if (pairs.getValue() != 9) {
-          //System.out.printf("%s, %d\n", pairs.getKey(), pairs.getValue());
           return false;
         }
         it.remove();
@@ -97,7 +96,6 @@ W = 5
 
   static void printCube(char[][] input) {
   // Prints the cube in a more human readable format.
-  System.out.printf("\n   ");
   int i = 0;
   while (i < 9){
     if(i % 3 == 0) System.out.printf("\n   ");
@@ -129,7 +127,7 @@ W = 5
       i++;
     }
   }
-  System.out.printf("\n");
+  System.out.printf("\n\n");
 }
 
 
@@ -260,7 +258,6 @@ W = 5
       fs.read(buffer);
       char[] temp = new String(buffer).replaceAll("\\s+", "").toCharArray(); //Remove whitespace
       if (basicChecks(temp)) {
-        System.out.println(temp);
         cube = generateCube(temp);
         printCube(cube);
         runTests(cube);
