@@ -38,6 +38,7 @@ W = 5
 
     if (input.length != 54) return false;
 
+
     String s = "";
     for (char c: input){
       s = "" + c;
@@ -52,14 +53,16 @@ W = 5
     Iterator it = occurances.entrySet().iterator();
     while (it.hasNext()) {
         Map.Entry pairs = (Map.Entry)it.next();
-        if (pairs.getValue() != 9) return false;
+        if (pairs.getValue() != 9) {
+          //System.out.printf("%s, %d\n", pairs.getKey(), pairs.getValue());
+          return false;
+        }
         it.remove();
     }
 
     String faces = new String(new char[]{input[4],input[19],input[22],input[25],input[40],input[49]});
     if (!faces.equals("RGYBOW")) return false;
 
-    System.out.println("VALID");
     return true;
   }
 
@@ -183,10 +186,17 @@ W = 5
   }
 
 
-  static boolean edgeTest() {
+  static boolean edgeTest(char [][] cube) {
+
     return true;
   }
 
+
+  public static void runTests(char[][] cube){
+    //permutationTest(cube);
+    //cornerTest(cube);
+    edgeTest(cube);
+  }
 
   public static void main(String[] args) throws IOException{
     if (args.length < 1) {
@@ -205,6 +215,7 @@ W = 5
         System.out.println(temp);
         cube = generateCube(temp);
         printCube(cube);
+        runTests(cube);
       }
       else{
         System.out.println(false);
