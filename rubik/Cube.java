@@ -51,13 +51,13 @@ W = 5
 
 
   public Cube(char[][] input){
-    this.cube = input;
+    this.cube = this.generateCube(input);
     this.corners = this.getCorners(this.cube);
     this.edges = this.getEdges(this.cube);
   }
 
 
-  public char[][] generateCube(char[] input){
+  private char[][] generateCube(char[] input){
     char[][] output = new char[6][9];
     int index = 0;
     int j;
@@ -82,6 +82,17 @@ W = 5
       }
     }
     return output;
+  }
+
+  // Deep cloning the input.
+  private char[][] generateCube(char[][] input){
+    char[][] temp = new char[6][9];
+    for (int i = 0; i < 6; i++){
+      for(int j = 0; j < 9; j++){
+        temp[i][j] = input[i][j];
+      }
+    }
+    return temp;
   }
 
 
@@ -121,7 +132,7 @@ W = 5
   System.out.printf("\n\n");
 }
 
-
+  // Rotates a face clockwise a given number of turns
   public Cube rotate(int face, int turns){
     if (turns < 1 || turns > 3) {throw new IllegalArgumentException("Turns need to be between 1 and 3.");}
     if (face < 0 || face > 5) {throw new IllegalArgumentException("Invalid face, must be between 0 and 5.");}
@@ -139,10 +150,40 @@ W = 5
       output.cube[face][3] = output.cube[face][7];
       output.cube[face][7] = output.cube[face][5];
       output.cube[face][5] = temp;
-
+      output.rotateCubies(face);
       turns = turns - 1;
     }
     return output;
+  }
+
+
+  private void rotateCubies(int face){
+    int[] index_keys = this.rotation_keys[face];
+    int i = 0;
+
+    // Storing the first values for later displacing.
+    char[] temp = new char[3];
+    for(int x: this.rotation_indexes.get(index_keys[0])){
+      temp[i] = this.cube[index_keys[0] / 10][x];
+      i++;
+    }
+
+    int next_face = 0;
+    int[] next_indexes = new int[3];
+    for(i = 0; i < 3; i++){
+      int current_face = index_keys[i];
+      int[] current_indexes = this.rotation_indexes.get(current_face);
+      next_face = index_keys[i + 1];
+      next_indexes = this.rotation_indexes.get(next_face);
+
+      for(int j = 0; j < 3; j++){
+        this.cube[current_face / 10][current_indexes[j]] = this.cube[next_face / 10][next_indexes[j]];
+      }
+    }
+
+    for(int j = 0; j < 3; j++){
+      this.cube[next_face / 10][next_indexes[j]] = temp[j];
+    }
   }
 
 

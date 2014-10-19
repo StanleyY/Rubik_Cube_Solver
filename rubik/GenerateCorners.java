@@ -22,8 +22,18 @@ class GenerateCorners {
   }
 
   public static void main(String[] args){
-    Cube c = new Cube(Cube.GOAL_STATE);
-    System.out.println(c.getEncodedCorners());
+    String s = "RRRRRRWRYGWRBGGOYYGGGYYYBBBGGYGYYBBBROOOOOOOOWWWWWWWBB";
+    Cube c = new Cube(s);
+    // Cube c = new Cube(Cube.GOAL_STATE);
+    //System.out.println(c.getEncodedCorners());
+    c.printCube();
+    int face = 1;
+    System.out.println("One Clockwise rotation");
+    c.rotate(face, 1).printCube();
+    System.out.println("Two Clockwise rotation");
+    c.rotate(face, 2).printCube();
+    System.out.println("Three Clockwise rotation");
+    c.rotate(face, 3).printCube();
     try {
      FileOutputStream output = new FileOutputStream("CornerValues");
      values[0] = (byte)205;
