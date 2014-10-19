@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 
-class Cube {
+public class Cube {
 /*
 R = 0
 G = 1
@@ -21,10 +21,16 @@ W = 5
   public int[] corners;
   public int[] edges;
 
+  public Cube(){
+    this.cube = new char[6][9];
+    this.corners = new int[8];
+    this.edges = new int[12];
+  }
+
   public Cube(char[] input){
     this.cube = this.generateCube(input);
     this.corners = this.getCorners(this.cube);
-    this.corners = this.getEdges(this.cube);
+    this.edges = this.getEdges(this.cube);
   }
 
   public char[][] generateCube(char[] input){
@@ -55,12 +61,12 @@ W = 5
   }
 
 
-  public void printCube(char[][] input) {
+  public void printCube() {
   // Prints the cube in a more human readable format.
   int i = 0;
   while (i < 9){
     if(i % 3 == 0) System.out.printf("\n   ");
-    System.out.printf("%c", input[0][i]);
+    System.out.printf("%c", this.cube[0][i]);
     i++;
   }
 
@@ -69,7 +75,7 @@ W = 5
   while (j < 9){
     System.out.printf("\n");
     while (i < 4){
-      System.out.printf("%c", input[i][j]);
+      System.out.printf("%c", this.cube[i][j]);
       j++;
       if (j % 3 == 0) {
         j = j - 3;
@@ -82,7 +88,7 @@ W = 5
 
   for (int x: new int[]{4, 5}){
     i = 0;
-    for (char c : input[x]){
+    for (char c : this.cube[x]){
       if(i % 3 == 0) System.out.printf("\n   ");
       System.out.printf("%c", c);
       i++;
