@@ -147,9 +147,6 @@ W = 5
 
 
   private Map<Integer, int[]> initRotationIndex(){
-    int[][] keys = new int[][]{new int[]{50,10,20,30}, new int[]{1,51,41,21},
-                               new int[]{2,12,42,32}, new int[]{3, 23,43,53},
-                               new int[]{24,14,54,34}, new int[]{45,15,5,35}};
     Map<Integer, int[]> indexes = new HashMap<Integer, int[]>();
     indexes.put(50, new int[]{6,7,8});
     indexes.put(10, new int[]{2,1,0});
