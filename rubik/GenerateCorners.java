@@ -14,7 +14,7 @@ class GenerateCorners {
 
   public static void main(String[] args){
     try {
-     FileOutputStream output = new FileOutputStream("CornersValues");
+     FileOutputStream output = new FileOutputStream("CornerValues");
      values[0] = (byte)205;
      values[1] = (byte)255;
      output.write(values);
