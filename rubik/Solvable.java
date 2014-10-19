@@ -92,15 +92,14 @@ W = 5
 
   static boolean cornerTest(char[][] cube) {
     int total = 0;
-    char val = '0';
     int[] indexes = new int[]{0, 2, 6, 8};
     for (int face: new int[]{1, 2, 3, 5}){
       for (int index: indexes){
         if (cube[face][index] == 'R' || cube[face][index] == 'O'){
           if (index == 2 || index == 6){
-            total += 1;
+            total += 2;
           }
-          else total += 2;
+          else total += 1;
         }
       }
     }

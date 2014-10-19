@@ -126,7 +126,7 @@ W = 5
     return output;
   }
 
-  // Relic of prerefactoring. Can't be removed elegantly unfortunately
+  // Relic of prerefactoring. Can't be easily removed unfortunately. Maybe I'll revisit it later.
   private boolean checkStickers(char[][] corners){
     List<String> invalid = Arrays.asList("RWG", "RBW", "RGY", "RYB", "OYG", "OBY", "OGW", "OWB");
     for (char[] c: corners){
@@ -136,6 +136,9 @@ W = 5
     }
     return true;
   }
+
+
+
 
 
   private int[] getEdges(char[][] cube){
@@ -164,6 +167,25 @@ W = 5
     if (index == 5) return 3;
     if (index == 1) return (face == 2) ? 0 : 4;
     else return (face == 2) ? 4 : 0;
+  }
+
+/*
+  public int getEncodedCorners(){
+
+  }*/
+
+
+  /* Generates the fatoradic value of this Cube's permutation of corners.
+    Currently hardcoded for 8 digit factorials so it won't need to recompute the factorials.
+  */
+  private int factoradic(){
+    //                            7! ,  6!,  5!, 4!...
+    int[] factorials = new int[]{5040, 720, 120, 24, 6, 2, 1, 1};
+    int value = 0;
+    for(int i = 0; i < 8; i++){
+      value += this.corners[i] * factorials[i];
+    }
+    return value;
   }
 
 }
