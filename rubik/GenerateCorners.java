@@ -23,11 +23,12 @@ class GenerateCorners {
 
   public static void main(String[] args){
     String s = "RRRRRRWRYGWRBGGOYYGGGYYYBBBGGYGYYBBBROOOOOOOOWWWWWWWBB";
-    Cube c = new Cube(s);
-    // Cube c = new Cube(Cube.GOAL_STATE);
+    //Cube c = new Cube(s);
+    Cube c = new Cube(Cube.GOAL_STATE);
     //System.out.println(c.getEncodedCorners());
+    System.out.println("Original");
     c.printCube();
-    int face = 1;
+    int face = 4;
     System.out.println("One Clockwise rotation");
     c.rotate(face, 1).printCube();
     System.out.println("Two Clockwise rotation");

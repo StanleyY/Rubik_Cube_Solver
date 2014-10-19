@@ -210,9 +210,9 @@ W = 5
     indexes.put(53, new int[]{8,5,2});
 
     indexes.put(14, new int[]{6,7,8});
-    indexes.put(24, new int[]{0,3,6});
-    indexes.put(34, new int[]{2,1,0});
-    indexes.put(54, new int[]{8,5,2});
+    indexes.put(24, new int[]{6,7,8});
+    indexes.put(34, new int[]{6,7,8});
+    indexes.put(54, new int[]{2,1,0});
 
     indexes.put(5, new int[]{2,1,0});
     indexes.put(15, new int[]{0,3,6});
