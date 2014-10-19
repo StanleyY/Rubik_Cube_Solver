@@ -207,19 +207,26 @@ W = 5
 
 
   public int getEncodedCorners(){
-    return this.factoradic() * 2187 + getCornerOrientation();
+    return this.factoradic(this.corners) * 2187 + getCornerOrientation();
   }
 
 
-  /* Generates the fatoradic value of this Cube's permutation of corners.
-    Currently hardcoded for 8 digit factorials so it won't need to recompute the factorials.
+  /* Generates the fatoradic value of this Cube's permutation of corners or edges.
+    Currently hardcoded for 8 or 12 digit factorials so it won't need to recompute the factorials.
   */
-  private int factoradic(){
-    //                            7! ,  6!,  5!, 4!...
-    int[] factorials = new int[]{5040, 720, 120, 24, 6, 2, 1, 1};
+  private int factoradic(int[] input){
+    int[] factorials;
     int value = 0;
-    for(int i = 0; i < 8; i++){
-      value += this.corners[i] * factorials[i];
+    if (input.length == 8) {
+      //                            7! ,  6!,  5!, 4!...
+      factorials = new int[]{5040, 720, 120, 24, 6, 2, 1, 1};
+    }
+    else {
+      //                        11!,      10!,    9!,      8!,  7! ,  6!,  5!, 4!...
+      factorials = new int[]{39916800, 3628800, 362880, 40320, 5040, 720, 120, 24, 6, 2, 1, 1};
+    }
+    for(int i = 0; i < input.length; i++){
+      value += input[i] * factorials[i];
     }
     return value;
   }
