@@ -17,6 +17,8 @@ W = 5
 
 */
 
+  public static final String GOAL_STATE = "RRRRRRRRRGGGYYYBBBGGGYYYBBBGGGYYYBBBOOOOOOOOOWWWWWWWWW";
+
   public char[][] cube;
   public int[] corners;
   public int[] edges;
@@ -28,6 +30,13 @@ W = 5
   }
 
   public Cube(char[] input){
+    this.cube = this.generateCube(input);
+    this.corners = this.getCorners(this.cube);
+    this.edges = this.getEdges(this.cube);
+  }
+
+  public Cube(String s){
+    char[] input = s.toCharArray();
     this.cube = this.generateCube(input);
     this.corners = this.getCorners(this.cube);
     this.edges = this.getEdges(this.cube);
@@ -137,8 +146,35 @@ W = 5
     return true;
   }
 
+  /* The cube's orientation is originally a base 3 number.
+  */
+  public int getCornerOrientation(){
+    int[] indexes = new int[]{0, 2, 6, 8};
+    String total = "";
 
+    // TODO: move this to its own function
+    char[][] corners = new char[][]{
+      {cube[0][0], cube[1][0], cube[5][6]},
+      {cube[0][2], cube[5][8], cube[3][2]},
+      {cube[0][6], cube[2][0], cube[1][2]},
+      {cube[0][8], cube[3][0], cube[2][2]},
 
+      {cube[4][0], cube[1][8], cube[2][6]},
+      {cube[4][2], cube[2][8], cube[3][6]},
+      {cube[4][6], cube[5][0], cube[1][6]},
+      {cube[4][8], cube[3][8], cube[5][2]}
+    };
+
+    int i = 0;
+    for (char[] c : corners){
+      i = 0;
+      for (char x : c){
+        if( x == 'R' || x == 'O') total = total + i;
+        i++;
+      }
+    }
+    return Integer.valueOf(total, 3);
+  }
 
 
   private int[] getEdges(char[][] cube){
@@ -169,10 +205,10 @@ W = 5
     else return (face == 2) ? 4 : 0;
   }
 
-/*
-  public int getEncodedCorners(){
 
-  }*/
+  public int getEncodedCorners(){
+    return this.factoradic() * 2187 + getCornerOrientation();
+  }
 
 
   /* Generates the fatoradic value of this Cube's permutation of corners.

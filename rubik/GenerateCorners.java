@@ -22,7 +22,8 @@ class GenerateCorners {
   }
 
   public static void main(String[] args){
-    Solvable.generateCube(Solvable.GOAL_STATE);
+    Cube c = new Cube(Cube.GOAL_STATE);
+    System.out.println(c.getEncodedCorners());
     try {
      FileOutputStream output = new FileOutputStream("CornerValues");
      values[0] = (byte)205;
