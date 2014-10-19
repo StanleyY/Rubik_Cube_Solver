@@ -35,4 +35,5 @@ class GenerateCorners {
      System.exit(1);
     }
   }
+
 }
