@@ -20,40 +20,25 @@ W = 5
   public static final String GOAL_STATE = "RRRRRRRRRGGGYYYBBBGGGYYYBBBGGGYYYBBBOOOOOOOOOWWWWWWWWW";
 
   public char[][] cube;
-  public int[] corners;
-  public int[] edges;
-  private Map<Integer, int[]> rotation_indexes = initRotationIndex();
-  private int[][] rotation_keys = new int[][]{new int[]{50,10,20,30}, new int[]{1,51,41,21},
-                                              new int[]{2,12,42,32}, new int[]{3, 23,43,53},
-                                              new int[]{24,14,54,34}, new int[]{45,15,5,35}};
-
 
   public Cube(){
     this.cube = new char[6][9];
-    this.corners = new int[8];
-    this.edges = new int[12];
   }
 
 
   public Cube(char[] input){
     this.cube = this.generateCube(input);
-    this.corners = this.getCorners(this.cube);
-    this.edges = this.getEdges(this.cube);
   }
 
 
   public Cube(String s){
     char[] input = s.toCharArray();
     this.cube = this.generateCube(input);
-    this.corners = this.getCorners(this.cube);
-    this.edges = this.getEdges(this.cube);
   }
 
 
   public Cube(char[][] input){
     this.cube = this.generateCube(input);
-    this.corners = this.getCorners(this.cube);
-    this.edges = this.getEdges(this.cube);
   }
 
 
@@ -158,12 +143,16 @@ W = 5
 
 
   private void rotateCubies(int face){
-    int[] index_keys = this.rotation_keys[face];
+    int[][] rotation_keys = new int[][]{new int[]{50,10,20,30}, new int[]{1,51,41,21},
+                                        new int[]{2,12,42,32}, new int[]{3, 23,43,53},
+                                        new int[]{24,14,54,34}, new int[]{45,15,5,35}};
+    int[] index_keys = rotation_keys[face];
+    Map<Integer, int[]> rotation_indexes = initRotationIndex();
     int i = 0;
 
     // Storing the first values for later displacing.
     char[] temp = new char[3];
-    for(int x: this.rotation_indexes.get(index_keys[0])){
+    for(int x: rotation_indexes.get(index_keys[0])){
       temp[i] = this.cube[index_keys[0] / 10][x];
       i++;
     }
@@ -172,9 +161,9 @@ W = 5
     int[] next_indexes = new int[3];
     for(i = 0; i < 3; i++){
       int current_face = index_keys[i];
-      int[] current_indexes = this.rotation_indexes.get(current_face);
+      int[] current_indexes = rotation_indexes.get(current_face);
       next_face = index_keys[i + 1];
-      next_indexes = this.rotation_indexes.get(next_face);
+      next_indexes = rotation_indexes.get(next_face);
 
       for(int j = 0; j < 3; j++){
         this.cube[current_face / 10][current_indexes[j]] = this.cube[next_face / 10][next_indexes[j]];
@@ -223,10 +212,9 @@ W = 5
   }
 
 
-  private int[] getCorners(char[][] cube) {
+  private int[] getCorners() {
     List<String> keys = Arrays.asList("GRW", "BRW", "GRY", "BRY", "GOY", "BOY", "GOW", "BOW");
     int[] output = new int[8];
-
     char[][] corners = new char[][]{
       {cube[0][0], cube[1][0], cube[5][6]},
       {cube[0][2], cube[5][8], cube[3][2]},
@@ -278,8 +266,7 @@ W = 5
 
       {cube[4][0], cube[1][8], cube[2][6]},
       {cube[4][2], cube[2][8], cube[3][6]},
-      {cube[4][6], cube[5][0], cube[1][6]},
-      {cube[4][8], cube[3][8], cube[5][2]}
+      {cube[4][6], cube[5][0], cube[1][6]}
     };
 
     int i = 0;
@@ -294,7 +281,7 @@ W = 5
   }
 
 
-  private int[] getEdges(char[][] cube){
+  private int[] getEdges(){
     List<String> keys = Arrays.asList("RW", "GR", "BR", "RY", "GW", "GY", "BY", "BW", "OY", "GO", "BO", "OW");
     int[] output = new int[12];
 
@@ -324,7 +311,7 @@ W = 5
 
 
   public int getEncodedCorners(){
-    return this.factoradic(this.corners) * 2187 + getCornerOrientation();
+    return this.factoradic(this.getCorners()) * 2187 + getCornerOrientation();
   }
 
 

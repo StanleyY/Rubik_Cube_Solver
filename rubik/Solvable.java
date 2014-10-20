@@ -160,7 +160,7 @@ W = 5
   }
 
   public static boolean runTests(Cube cube){
-    return permutationTest(cube.corners, cube.edges) && cornerTest(cube.cube) && edgeTest(cube.cube);
+    return permutationTest(cube.getCorners(), cube.getEdges()) && cornerTest(cube.cube) && edgeTest(cube.cube);
   }
 
   public static void main(String[] args) throws IOException{
