@@ -21,24 +21,38 @@ class GenerateCorners {
     }
   }
 
-  public static void main(String[] args){
-    String s = "RRRRRRWRYGWRBGGOYYGGGYYYBBBGGYGYYBBBROOOOOOOOWWWWWWWBB";
-    //Cube c = new Cube(s);
+
+  static void generateValues(){
     Cube c = new Cube(Cube.GOAL_STATE);
+    Queue<Cube> q = new LinkedList<Cube>();
+    Queue<Cube> next = new LinkedList<Cube>();
+    next.add(c);
+    int level = 0;
+    while(!next.isEmpty() && level < 2){
+      System.out.println("next queue size: " + next.size());
+      q = next;
+      next = new LinkedList<Cube>();
+      while(!q.isEmpty()){
+        Cube current = q.poll();
+        current.printCube();
+        System.out.println(current.getEncodedCorners());
+        for(int face = 0; face < 6; face++){
+          for(int i = 1; i < 4; i++){
+            next.add(current.rotate(face, i));
+          }
+        }
+      }
+      level++;
+    }
+  }
+
+  public static void main(String[] args){
     //System.out.println(c.getEncodedCorners());
-    System.out.println("Original");
-    c.printCube();
-    int face = 4;
-    System.out.println("One Clockwise rotation");
-    c.rotate(face, 1).printCube();
-    System.out.println("Two Clockwise rotation");
-    c.rotate(face, 2).printCube();
-    System.out.println("Three Clockwise rotation");
-    c.rotate(face, 3).printCube();
     try {
      FileOutputStream output = new FileOutputStream("CornerValues");
      values[0] = (byte)205;
      values[1] = (byte)255;
+     generateValues();
      output.write(values);
      output.close();
     } catch (java.io.IOException e) {
