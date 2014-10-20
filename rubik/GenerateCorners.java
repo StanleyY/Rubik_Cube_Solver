@@ -27,7 +27,8 @@ class GenerateCorners {
     insertValue(new Cube(Cube.GOAL_STATE).getEncodedCorners(), 0);
   }
 
-
+  // BFS attempt
+/*
   static void generateValues(){
     Cube c = new Cube(Cube.GOAL_STATE);
     Queue<Cube> q = new LinkedList<Cube>();
@@ -52,14 +53,35 @@ class GenerateCorners {
       }
       level++;
     }
-    /*
-    System.out.println(getValue(22987557));
-    System.out.println(getValue(36581949));
-    System.out.println(getValue(2379456));
-    System.out.println(getValue(2375082));
-    */
   }
+*/
 
+  // Limited DFS attempt
+  static void generateValues(){
+    Cube c = new Cube(Cube.GOAL_STATE);
+    c.setLevel(0);
+    Stack<Cube> s = new Stack<Cube>();
+    s.push(c);
+    long found = 1;
+    while(!s.empty()){
+      Cube current = s.pop();
+      int level = current.level;
+      if (found % 100000 == 0) System.out.printf("found: %d\n", found);
+      for(int face = 0; face < 6; face++){
+        for(int i = 1; i < 4; i++){
+          Cube node = current.rotate(face, i);
+          if (getValue(node.getEncodedCorners()) == -1 || getValue(node.getEncodedCorners()) > level + 1){
+            insertValue(node.getEncodedCorners(), level + 1);
+            if (found < Long.MAX_VALUE) found++;
+            if (level + 1 < 11){ // Max moves is 11.
+              node.setLevel(level + 1);
+              s.push(node);
+            }
+          }
+        }
+      }
+    }
+  }
 
   // 
   static void insertValue(int index, int level){
@@ -83,8 +105,19 @@ class GenerateCorners {
   }
 
 
-  public static void main(String[] args){
-    //System.out.println(c.getEncodedCorners());
+  static void read(){
+    try {
+     FileInputStream input = new FileInputStream("CornerValues");
+     input.read(values);
+     input.close();
+    } catch (java.io.IOException e) {
+     e.printStackTrace();
+     System.exit(1);
+    }
+   }
+
+   static void write(){
+    System.out.println("Starting writing process");
     try {
      FileOutputStream output = new FileOutputStream("CornerValues");
      initValues();
@@ -95,6 +128,20 @@ class GenerateCorners {
      e.printStackTrace();
      System.exit(1);
     }
+    System.out.println("Done writing");
+   }
+
+  public static void main(String[] args){
+    long start = System.currentTimeMillis();
+    //write();
+    read();
+    System.out.println(getValue(3));
+    System.out.println(getValue(22987557));
+    System.out.println(getValue(36581949));
+    System.out.println(getValue(2379456));
+    System.out.println(getValue(2375082));
+
+    System.out.println("Time used: " + (System.currentTimeMillis() - start));
   }
 
 }

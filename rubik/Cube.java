@@ -20,6 +20,7 @@ W = 5
   public static final String GOAL_STATE = "RRRRRRRRRGGGYYYBBBGGGYYYBBBGGGYYYBBBOOOOOOOOOWWWWWWWWW";
 
   public char[][] cube;
+  public int level;
 
   public Cube(){
     this.cube = new char[6][9];
@@ -31,6 +32,12 @@ W = 5
   }
 
 
+  public Cube(char[] input, int level){
+    this.cube = this.generateCube(input);
+    this.level = level;
+  }
+
+
   public Cube(String s){
     char[] input = s.toCharArray();
     this.cube = this.generateCube(input);
@@ -39,6 +46,17 @@ W = 5
 
   public Cube(char[][] input){
     this.cube = this.generateCube(input);
+  }
+
+
+  public Cube(char[][] input, int level){
+    this.cube = this.generateCube(input);
+    this.level = level;
+  }
+
+
+  public void setLevel(int level){
+    this.level = level;
   }
 
 
