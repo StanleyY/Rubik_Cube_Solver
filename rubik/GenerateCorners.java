@@ -17,7 +17,7 @@ class GenerateCorners {
       int val = getValue(i);
       if(val == -1 || val == 15) {
         total += 1;
-        System.out.println("VALUE UNFILLED AT INDEX " + i);
+        System.out.printf("VALUE UNFILLED AT INDEX %d: %d\n", i, val);
       }
     }
     System.out.println("TOTAL UNFILLED " + total);
