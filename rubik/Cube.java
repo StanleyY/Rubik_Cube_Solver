@@ -329,26 +329,37 @@ W = 5
 
 
   public int getEncodedCorners(){
-    return this.factoradic(this.getCorners()) * 2187 + getCornerOrientation();
+    return this.stateMap(this.getCorners()) * 2187 + getCornerOrientation();
   }
 
 
   /* Generates the fatoradic value of this Cube's permutation of corners or edges.
     Currently hardcoded for 8 or 12 digit factorials so it won't need to recompute the factorials.
   */
-  private int factoradic(int[] input){
-    int[] factorials;
+  private int stateMap(int[] input){
     int value = 0;
+    ArrayList<Integer> input_list = new ArrayList<Integer>(input.length);
+    for(int x : input) {
+      input_list.add(x);
+    }
+    int[] factorials;
     if (input.length == 8) {
       //                            7! ,  6!,  5!, 4!...
-      factorials = new int[]{5040, 720, 120, 24, 6, 2, 1, 1};
+      factorials = new int[]{5040, 720, 120, 24, 6, 2, 1};
     }
     else {
-      //                        11!,      10!,    9!,      8!,  7! ,  6!,  5!, 4!...
-      factorials = new int[]{39916800, 3628800, 362880, 40320, 5040, 720, 120, 24, 6, 2, 1, 1};
+      //                            11!,      10!,    9!,      8!,  7! ,  6!,  5!, 4!...
+      factorials = new int[]{39916800, 3628800, 362880, 40320, 5040, 720, 120, 24, 6, 2, 1};
     }
-    for(int i = 0; i < input.length; i++){
-      value += input[i] * factorials[i];
+
+    int[] sequence = new int[input.length - 1];
+    for (int j = 0; j < (input.length - 1); j++){
+      sequence[j] = input_list.indexOf(j);
+      input_list.remove(input_list.indexOf(j));
+    }
+
+    for(int i = 0; i < input.length - 1; i++){
+      value += sequence[i] * factorials[i];
     }
     return value;
   }

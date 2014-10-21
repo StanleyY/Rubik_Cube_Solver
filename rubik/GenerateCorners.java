@@ -11,13 +11,16 @@ class GenerateCorners {
   static byte right = (byte)15;
   static byte[] values = new byte [44089920];
 
-  static void errorCheck(byte[] values){
-    byte x = (byte)15;
+  static void errorCheck(){
+    int total = 0;
     for(int i = 0; i < values.length; i++){
-      if((values[i] & right) == x || ((values[i] & left) >> 4) == x) {
+      int val = getValue(i);
+      if(val == -1 || val == 15) {
+        total += 1;
         System.out.println("VALUE UNFILLED AT INDEX " + i);
       }
     }
+    System.out.println("TOTAL UNFILLED " + total);
   }
 
   static void initValues(){
@@ -132,16 +135,20 @@ class GenerateCorners {
    }
 
   public static void main(String[] args){
-    long start = System.currentTimeMillis();
+    Date start = new java.util.Date();
+    //Cube c = new Cube(Cube.GOAL_STATE);
+    //System.out.println(c.getEncodedCorners());
     //write();
     read();
-    System.out.println(getValue(3));
+    errorCheck();
+    //System.out.println(getValue(3));
+    /*
     System.out.println(getValue(22987557));
     System.out.println(getValue(36581949));
     System.out.println(getValue(2379456));
     System.out.println(getValue(2375082));
-
-    System.out.println("Time used: " + (System.currentTimeMillis() - start));
+    */
+    System.out.printf("Start Time: %s\nEnd Time: %s\n", start, new java.util.Date());
   }
 
 }
