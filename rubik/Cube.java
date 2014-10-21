@@ -320,6 +320,54 @@ W = 5
   }
 
 
+  private int[] getEdgeOrientation() {
+    int[] edges_values = new int[]{1,1,1,1,1,1,1,1,1,1,1,1};
+    int index = 0;
+    int pos = 1;
+    char face = '0';
+    char side = '0';
+    for (int i: new int[]{0, 4}){
+      for(int j: new int[]{3, 5}){
+        face = cube[i][j];
+        if(!(face == 'Y' || face == 'W')){
+          side = cube[j - 2][pos];
+          if(side == 'Y' || side == 'W'){
+            edges_values[index] = 2;
+          }
+        }
+        index++;
+      }
+      pos = 7; // Bottom index on Green/Blue.
+    }
+
+    for (int i: new int[]{2, 5}){
+      for(int j: new int[]{1, 3, 5, 7}){
+        face = cube[i][j];
+        if(!(face == 'Y' || face == 'W')){
+          if (face == 'B' || face == 'G') {
+            edges_values[index] = 2;
+          }
+          else { // Red/Yellow face, confirm if it is a Red/Yellow + Blue/Green.
+            if (i == 5 && (j == 3 || j == 5)){
+              pos = j;
+            }
+            else{
+              pos = 8 - j;
+            }
+            side = cube[sideFace(i, j)][pos];
+            if(side == 'Y' || side == 'W'){
+              edges_values[index] = 2;
+            }
+          }
+        }
+        index++;
+      }
+    }
+
+    return edges_values;
+  }
+
+
   public int sideFace(int face, int index){
     if (index == 3) return 1;
     if (index == 5) return 3;
@@ -329,39 +377,50 @@ W = 5
 
 
   public int getEncodedCorners(){
-    return this.stateMap(this.getCorners()) * 2187 + getCornerOrientation();
-  }
-
-
-  /* Generates the fatoradic value of this Cube's permutation of corners or edges.
-    Currently hardcoded for 8 or 12 digit factorials so it won't need to recompute the factorials.
-  */
-  private int stateMap(int[] input){
     int value = 0;
-    ArrayList<Integer> input_list = new ArrayList<Integer>(input.length);
-    for(int x : input) {
+    ArrayList<Integer> input_list = new ArrayList<Integer>(8);
+    for(int x : this.getCorners()) {
       input_list.add(x);
     }
-    int[] factorials;
-    if (input.length == 8) {
-      //                      7! ,  6!,  5!, 4!...
-      factorials = new int[]{5040, 720, 120, 24, 6, 2, 1};
-    }
-    else {
-      //                        11!,      10!,    9!,      8!,  7! ,  6!,  5!, 4!...
-      factorials = new int[]{39916800, 3628800, 362880, 40320, 5040, 720, 120, 24, 6, 2, 1};
-    }
-
-    int[] sequence = new int[input.length - 1];
-    for (int j = 0; j < (input.length - 1); j++){
+    int[] weights = new int[]{5040, 720, 120, 24, 6, 2, 1};
+    int[] sequence = new int[7];;
+    for (int j = 0; j < 7; j++){
       sequence[j] = input_list.indexOf(j);
       input_list.remove(input_list.indexOf(j));
     }
 
-    for(int i = 0; i < input.length - 1; i++){
-      value += sequence[i] * factorials[i];
+    for(int i = 0; i < 7; i++){
+      value += sequence[i] * weights[i];
     }
+
+    return value * 2187 + getCornerOrientation();
+  }
+
+
+  public int getEncodedEdges(int half){
+    int value = 0;
+    int[] edgeGroupOrientation = Arrays.copyOfRange(getEdgeOrientation(), half * 6, half * 6 + 6); // half is either 0 or 1.
+    ArrayList<Integer> input_list = new ArrayList<Integer>(12);
+    for(int x : this.getEdges()) {
+      input_list.add(x);
+    }
+    int[] weights = new int[]{1774080, 80640, 4032, 224, 14, 1};
+    int[] sequence = new int[6];
+    for (int j = 11; j > 5; j--){
+      sequence[j] = input_list.indexOf(j) + 1;
+      input_list.remove(input_list.indexOf(j));
+    }
+
+    for(int i = 0; i < 6; i++){
+      value += sequence[i] * weights[i] * edgeGroupOrientation[i];
+    }
+
     return value;
   }
+
+
+  /* Generates the fatoradic value of this Cube's permutation of corners or edges.
+    Currently hardcoded for weight values so they don't need to be recomputed everytime.
+  */
 
 }
