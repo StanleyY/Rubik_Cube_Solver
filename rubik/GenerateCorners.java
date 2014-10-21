@@ -9,11 +9,11 @@ class GenerateCorners {
 
   static byte left = (byte)0xF0;
   static byte right = (byte)0x0F;
-  static byte[] values = new byte [44089920];
+  static byte[] corner_values = new byte [44089920];
 
   static void errorCheck(){
     int total = 0;
-    for(int i = 0; i < values.length; i++){
+    for(int i = 0; i < corner_values.length; i++){
       int val = getValue(i);
       if(val < 0 || val > 11) {
         total += 1;
@@ -24,7 +24,7 @@ class GenerateCorners {
   }
 
   static void initValues(){
-    for (int i = 0; i < values.length * 2; i++){
+    for (int i = 0; i < corner_values.length * 2; i++){
       insertValue(i, 15);
     }
   }
@@ -105,22 +105,22 @@ class GenerateCorners {
 
   // 
   static void insertValue(int index, int level){
-    byte current = values[index / 2];
+    byte current = corner_values[index / 2];
     if((index & 1) == 0){
-      values[index / 2] = (byte)((level << 4) | (current & right) );
+      corner_values[index / 2] = (byte)((level << 4) | (current & right) );
     }
     else{
-      values[index / 2] = (byte)( (current & left) | level );
+      corner_values[index / 2] = (byte)( (current & left) | level );
     }
   }
 
 
   static int getValue(int index){
     if((index & 1) == 0){
-      return (( (values[index / 2] & left) >> 4) & right);
+      return (( (corner_values[index / 2] & left) >> 4) & right);
     }
     else{
-      return (values[index / 2] & right);
+      return (corner_values[index / 2] & right);
     }
   }
 
@@ -128,7 +128,7 @@ class GenerateCorners {
   static void read(){
     try {
      FileInputStream input = new FileInputStream("CornerValues");
-     input.read(values);
+     input.read(corner_values);
      input.close();
     } catch (java.io.IOException e) {
      e.printStackTrace();
@@ -142,7 +142,7 @@ class GenerateCorners {
      FileOutputStream output = new FileOutputStream("CornerValues");
      initValues();
      generateValues();
-     output.write(values);
+     output.write(corner_values);
      output.close();
     } catch (java.io.IOException e) {
      e.printStackTrace();
