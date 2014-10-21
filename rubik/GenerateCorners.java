@@ -17,7 +17,7 @@ class GenerateCorners {
       int val = getValue(i);
       if(val < 0 || val > 11) {
         total += 1;
-        System.out.printf("VALUE UNFILLED AT INDEX %d: %d\n", i, val);
+        //System.out.printf("VALUE UNFILLED AT INDEX %d: %d\n", i, val);
       }
     }
     System.out.println("TOTAL UNFILLED " + total);
@@ -27,7 +27,6 @@ class GenerateCorners {
     for (int i = 0; i < values.length * 2; i++){
       insertValue(i, 15);
     }
-    insertValue(new Cube(Cube.GOAL_STATE).getEncodedCorners(), 0);
   }
 
   // BFS attempt
@@ -64,24 +63,42 @@ class GenerateCorners {
     Cube c = new Cube(Cube.GOAL_STATE);
     c.setLevel(0);
     Stack<Cube> s = new Stack<Cube>();
+    Stack<Cube> next = new Stack<Cube>();
     s.push(c);
+    int limit = 6;
     long found = 1;
     while(!s.empty()){
       Cube current = s.pop();
       int level = current.level;
       if (found % 100000 == 0) System.out.printf("found: %d\n", found);
-      for(int face = 0; face < 6; face++){
-        for(int i = 1; i < 4; i++){
-          Cube node = current.rotate(face, i);
-          if (getValue(node.getEncodedCorners()) > level + 1){
-            insertValue(node.getEncodedCorners(), level + 1);
-            if (found < Long.MAX_VALUE) found++;
-            if (level + 1 < 11){ // Max moves is 11.
-              node.setLevel(level + 1);
-              s.push(node);
+
+      if (getValue(current.getEncodedCorners()) > level) {
+        insertValue(current.getEncodedCorners(), level);
+
+        if (level < 11){ // Max moves is 11.
+          for(int face = 0; face < 6; face++){
+            for(int i = 1; i < 4; i++){
+              Cube node = current.rotate(face, i);
+              if (getValue(node.getEncodedCorners()) > level + 1){
+                if (found < Long.MAX_VALUE) found++;
+
+                  node.setLevel(level + 1);
+                  if (level + 1 < limit) {
+                    s.push(node);
+                  }
+                  else {
+                    next.push(node);
+                  }
+              }
             }
           }
         }
+      }
+      if(s.empty() && !next.empty()){
+        System.out.println("Starting level: " + limit);
+        s = next;
+        limit = limit + 6;
+        next = new Stack<Cube>();
       }
     }
   }
