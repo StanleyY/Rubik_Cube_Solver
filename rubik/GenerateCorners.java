@@ -7,15 +7,15 @@ import java.util.*;
 
 class GenerateCorners {
 
-  static byte left = (byte)240;
-  static byte right = (byte)15;
+  static byte left = (byte)0xF0;
+  static byte right = (byte)0x0F;
   static byte[] values = new byte [44089920];
 
   static void errorCheck(){
     int total = 0;
     for(int i = 0; i < values.length; i++){
       int val = getValue(i);
-      if(val == -1 || val == 15) {
+      if(val < 0 || val > 11) {
         total += 1;
         System.out.printf("VALUE UNFILLED AT INDEX %d: %d\n", i, val);
       }
@@ -24,8 +24,8 @@ class GenerateCorners {
   }
 
   static void initValues(){
-    for (int i = 0; i < values.length; i++){
-      values[i] = (byte)255;
+    for (int i = 0; i < values.length * 2; i++){
+      insertValue(i, 15);
     }
     insertValue(new Cube(Cube.GOAL_STATE).getEncodedCorners(), 0);
   }
@@ -73,7 +73,7 @@ class GenerateCorners {
       for(int face = 0; face < 6; face++){
         for(int i = 1; i < 4; i++){
           Cube node = current.rotate(face, i);
-          if (getValue(node.getEncodedCorners()) == -1 || getValue(node.getEncodedCorners()) > level + 1){
+          if (getValue(node.getEncodedCorners()) > level + 1){
             insertValue(node.getEncodedCorners(), level + 1);
             if (found < Long.MAX_VALUE) found++;
             if (level + 1 < 11){ // Max moves is 11.
@@ -90,20 +90,20 @@ class GenerateCorners {
   static void insertValue(int index, int level){
     byte current = values[index / 2];
     if((index & 1) == 0){
-      values[index / 2] = (byte)( ((byte)level << 4) | (current & right) );
+      values[index / 2] = (byte)((level << 4) | (current & right) );
     }
     else{
-      values[index / 2] = (byte)( (current & left) | ((byte)level) );
+      values[index / 2] = (byte)( (current & left) | level );
     }
   }
 
 
   static int getValue(int index){
     if((index & 1) == 0){
-      return (int)((values[index / 2] & left) >> 4);
+      return (( (values[index / 2] & left) >> 4) & right);
     }
     else{
-      return (int) (values[index / 2] & right);
+      return (values[index / 2] & right);
     }
   }
 
@@ -137,17 +137,16 @@ class GenerateCorners {
   public static void main(String[] args){
     Date start = new java.util.Date();
     //Cube c = new Cube(Cube.GOAL_STATE);
-    //System.out.println(c.getEncodedCorners());
-    //write();
-    read();
-    errorCheck();
+    write();
+    //read();
+    //errorCheck();
     //System.out.println(getValue(3));
-    /*
-    System.out.println(getValue(22987557));
-    System.out.println(getValue(36581949));
-    System.out.println(getValue(2379456));
-    System.out.println(getValue(2375082));
-    */
+
+    //System.out.println(getValue(22987557));
+    //System.out.println(getValue(0));
+    //System.out.println(getValue(2379456));
+    //System.out.println(getValue(14171760));
+
     System.out.printf("Start Time: %s\nEnd Time: %s\n", start, new java.util.Date());
   }
 
