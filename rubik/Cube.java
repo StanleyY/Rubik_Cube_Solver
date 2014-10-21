@@ -398,6 +398,7 @@ W = 5
 
 
   public int getEncodedEdges(int half){
+    //System.out.println("NEW");
     int value = 0;
     int[] edgeGroupOrientation = Arrays.copyOfRange(getEdgeOrientation(), half * 6, half * 6 + 6); // half is either 0 or 1.
     ArrayList<Integer> input_list = new ArrayList<Integer>(12);
@@ -406,15 +407,20 @@ W = 5
     }
     int[] weights = new int[]{1774080, 80640, 4032, 224, 14, 1};
     int[] sequence = new int[6];
+    int index = 0;
     for (int j = 11; j > 5; j--){
-      sequence[j] = input_list.indexOf(j) + 1;
+      sequence[index] = input_list.indexOf(j) + 1;
       input_list.remove(input_list.indexOf(j));
+      index++;
     }
 
+    //System.out.println("VALUE BEFORE: " + value);
     for(int i = 0; i < 6; i++){
-      value += sequence[i] * weights[i] * edgeGroupOrientation[i];
+    //  System.out.printf("Sequence: %d, Weight: %d, Orientation: %d. Total: %d\n", sequence[i], weights[i], edgeGroupOrientation[i], (sequence[i] * weights[i] - 1) * edgeGroupOrientation[i]);
+      value += (sequence[i] * edgeGroupOrientation[i] - 1) * weights[i];
     }
 
+    //System.out.println("Value: " + value);
     return value;
   }
 
