@@ -30,10 +30,8 @@ class GenerateCorners {
       insertCornerValue(i, 15);
     }
     for (int i = 0; i < edge0_values.length * 2; i++){
-      insertCornerValue(i, 15);
-    }
-    for (int i = 0; i < edge1_values.length * 2; i++){
-      insertCornerValue(i, 15);
+      insertEdge0Value(i, 15);
+      insertEdge1Value(i, 15);
     }
   }
 
