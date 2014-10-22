@@ -5,7 +5,7 @@ import java.nio.file.*;
 import java.io.*;
 import java.util.*;
 
-class GenerateCorners {
+class GenerateTables {
 
   static byte left = (byte)0xF0;
   static byte right = (byte)0x0F;
