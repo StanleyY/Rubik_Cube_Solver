@@ -195,6 +195,7 @@ class GenerateTables {
      input = new FileInputStream("Edge1Values");
      input.read(edge1_values);
      input.close();
+     errorCheck();
     } catch (java.io.IOException e) {
      e.printStackTrace();
      System.exit(1);
