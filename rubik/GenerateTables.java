@@ -34,35 +34,6 @@ class GenerateTables {
     }
   }
 
-  // BFS attempt
-/*
-  static void generateValues(){
-    Cube c = new Cube(Cube.GOAL_STATE);
-    Queue<Cube> q = new LinkedList<Cube>();
-    Queue<Cube> next = new LinkedList<Cube>();
-    next.add(c);
-    int level = 0;
-    while(!next.isEmpty()){
-      System.out.println("current level: " + level);
-      q = next;
-      next = new LinkedList<Cube>();
-      while(!q.isEmpty()){
-        Cube current = q.poll();
-        for(int face = 0; face < 6; face++){
-          for(int i = 1; i < 4; i++){
-            Cube node = current.rotate(face, i);
-            if (getCornerValue(node.getEncodedCorners()) == 15 || getCornerValue(node.getEncodedCorners()) == -1){
-              insertCornerValue(node.getEncodedCorners(), level);
-              next.add(node);
-            }
-          }
-        }
-      }
-      level++;
-    }
-  }
-*/
-
   // Limited DFS attempt,
   //TODO: reimplement as interative DFS later.
   static void generateValues(){
