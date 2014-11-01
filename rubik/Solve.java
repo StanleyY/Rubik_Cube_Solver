@@ -16,6 +16,18 @@ class Solve {
   static Cube goal_cube = new Cube(Cube.GOAL_STATE);
 
 
+  static void solveCube(){
+    int threshold = h(input_cube);
+  }
+
+
+  static int h(Cube c){
+    return Math.max(getCornerValue(c.getEncodedCorners()),
+                    Math.max(getEdge0Value(c.getEncodedEdges(0)),
+                             getEdge1Value(c.getEncodedEdges(1))));
+  }
+
+
   static boolean goalTest(Cube c){
     for (int i = 0; i < 6; i++){
       if (!Arrays.equals(c.cube[i], goal_cube.cube[i])) return false;
