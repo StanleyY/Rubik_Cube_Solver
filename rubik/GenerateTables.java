@@ -1,6 +1,5 @@
 package rubik;
 
-import java.util.Arrays;
 import java.nio.file.*;
 import java.io.*;
 import java.util.*;
