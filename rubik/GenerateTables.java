@@ -36,19 +36,20 @@ class GenerateTables {
 
   // Limited DFS attempt,
   //TODO: reimplement as interative DFS later.
-  static void generateValues(){
+  // Currently takes ~1 hour 20 minutes.
+  static void generateEdgeValues(){
     Cube c = new Cube(Cube.GOAL_STATE);
     c.setLevel(0);
+    c.setFace(7);
     Stack<Cube> s = new Stack<Cube>();
     Stack<Cube> next = new Stack<Cube>();
     s.push(c);
-    int limit = 6; // limit of 6 needs ~1.7 gb of RAM to run reasonably. limit of 7 needs >4gb of RAM.
+    int limit = 4; // limit of 6 needs ~1.7 gb of RAM to run reasonably. limit of 7 needs >4gb of RAM.
     long found = 1;
     while(!s.empty()){
       Cube current = s.pop();
       int level = current.level;
       if (found % 100000 == 0) System.out.printf("found: %d\n", found);
-      int corner_index = current.getEncodedCorners();
       int edge0_index = current.getEncodedEdges(0);
       int edge1_index = current.getEncodedEdges(1);
 
@@ -59,24 +60,20 @@ class GenerateTables {
         insertEdge1Value(edge1_index, level);
       }
 
-      if (getCornerValue(corner_index) > level) {
-        insertCornerValue(corner_index, level);
-
-        if (level < 11){ // Max moves is 11.
-          for(int face = 0; face < 6; face++){
-            if (face != current.last_face){
-              for(int i = 1; i < 4; i++){
-                Cube node = current.rotate(face, i);
-                if (getCornerValue(node.getEncodedCorners()) > level + 1){
-                  if (found < Long.MAX_VALUE) found++;
-                  node.setLevel(level + 1);
-                  node.setFace(face);
-                  if (level + 1 < limit) {
-                    s.push(node);
-                  }
-                  else {
-                    next.push(node);
-                  }
+      if (level < 10){ // Max moves is 11.
+        for(int face = 0; face < 6; face++){
+          if (face != current.last_face){
+            for(int i = 1; i < 4; i++){
+              Cube node = current.rotate(face, i);
+              if (getEdge0Value(node.getEncodedEdges(0)) > level + 1 || getEdge1Value(node.getEncodedEdges(1)) > level + 1){
+                if (found < Long.MAX_VALUE) found++;
+                node.setLevel(level + 1);
+                node.setFace(face);
+                if (level + 1 < limit) {
+                  s.push(node);
+                }
+                else {
+                  next.push(node);
                 }
               }
             }
@@ -86,11 +83,53 @@ class GenerateTables {
       if(s.empty() && !next.empty()){
         System.out.println("Starting level: " + limit);
         s = next;
-        limit = limit + 6;
+        limit = 12;
         next = new Stack<Cube>();
       }
     }
   }
+
+
+  static void generateValuesID(){
+    Cube goal = new Cube(Cube.GOAL_STATE);
+    goal.setLevel(0);
+    goal.setFace(7);
+    Stack<Cube> s = new Stack<Cube>();
+    s.push(goal);
+    int limit = 0;
+    int found = 1;
+    while (limit < 12){
+      while(!s.empty()){
+        Cube current = s.pop();
+        int level = current.level + 1;
+        for(int face = 0; face < 6; face++){
+          if (face != current.last_face){
+            for(int i = 1; i < 4; i++){
+              Cube node = current.rotate(face, i);
+              int existing_node_corner_value = getCornerValue(node.getEncodedCorners());
+              if (level == limit){
+                if(existing_node_corner_value > level){
+                  found++;
+                  if(found % 100000 == 0) System.out.printf("Passed %d corners found.\n", found);
+                  insertCornerValue(node.getEncodedCorners(), level);
+                }
+              }
+              else if (existing_node_corner_value == level){
+                node.setLevel(level);
+                node.setFace(face);
+                s.push(node);
+              }
+            }
+          }
+        }
+      }
+      limit++;
+      System.out.println("Current Limit: " + limit);
+      s.push(goal);
+    }
+    System.out.println("Corners Found: " + found);
+  }
+
 
   // 
   static void insertCornerValue(int index, int level){
@@ -182,9 +221,9 @@ class GenerateTables {
     System.out.println("Starting writing process");
     try {
      initValues();
-     generateValues();
+     generateEdgeValues();
      FileOutputStream output = new FileOutputStream("CornerValues");
-     output.write(corner_values);
+     //output.write(corner_values);
      output.close();
 
      output = new FileOutputStream("Edge0Values");
@@ -203,16 +242,11 @@ class GenerateTables {
 
   public static void main(String[] args){
     Date start = new java.util.Date();
-    //Cube c = new Cube(Cube.GOAL_STATE);
+    //Cube c = new Cube("ORRORRROOYYYBGGWWWBGGWYYGBBYYYGBBWWWROOROOORRGBBYWWBGG"); // 5 move cube
     write();
     //read();
+    //System.out.printf("Corners: %d, Edge 1: %d , Edge 2, %d\n", getCornerValue(c.getEncodedCorners()), getEdge0Value(c.getEncodedEdges(0)), getEdge1Value(c.getEncodedEdges(1)));
     //errorCheck();
-    //System.out.println(getCornerValue(3));
-
-    //System.out.println(getCornerValue(22987557));
-    //System.out.println(getCornerValue(0));
-    //System.out.println(getCornerValue(2379456));
-    //System.out.println(getCornerValue(14171760));
 
     System.out.printf("Start Time: %s\nEnd Time: %s\n", start, new java.util.Date());
   }
