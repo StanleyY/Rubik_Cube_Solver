@@ -90,18 +90,20 @@ class GenerateTables {
 
         if (level < 11){ // Max moves is 11.
           for(int face = 0; face < 6; face++){
-            for(int i = 1; i < 4; i++){
-              Cube node = current.rotate(face, i);
-              if (getCornerValue(node.getEncodedCorners()) > level + 1){
-                if (found < Long.MAX_VALUE) found++;
-
+            if (face != current.last_face){
+              for(int i = 1; i < 4; i++){
+                Cube node = current.rotate(face, i);
+                if (getCornerValue(node.getEncodedCorners()) > level + 1){
+                  if (found < Long.MAX_VALUE) found++;
                   node.setLevel(level + 1);
+                  node.setFace(face);
                   if (level + 1 < limit) {
                     s.push(node);
                   }
                   else {
                     next.push(node);
                   }
+                }
               }
             }
           }
