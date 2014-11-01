@@ -18,6 +18,7 @@ class Solve {
 
   static void solveCube(){
     int threshold = h(input_cube);
+    PriorityQueue<CubeNode> queue = new PriorityQueue<CubeNode>(100000000, new CubeNodeComparator());
   }
 
 
