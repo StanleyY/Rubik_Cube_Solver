@@ -22,6 +22,7 @@ W = 5
   public char[][] cube;
   public int level;
   public int last_face;
+  public Map<Integer, int[]> rotation_indexes = initRotationIndex();
 
   public Cube(){
     this.cube = new char[6][9];
@@ -170,12 +171,11 @@ W = 5
                                         new int[]{2,12,42,32}, new int[]{3, 23,43,53},
                                         new int[]{24,14,54,34}, new int[]{45,15,5,35}};
     int[] index_keys = rotation_keys[face];
-    Map<Integer, int[]> rotation_indexes = initRotationIndex();
     int i = 0;
 
     // Storing the first values for later displacing.
     char[] temp = new char[3];
-    for(int x: rotation_indexes.get(index_keys[0])){
+    for(int x: this.rotation_indexes.get(index_keys[0])){
       temp[i] = this.cube[index_keys[0] / 10][x];
       i++;
     }
@@ -184,9 +184,9 @@ W = 5
     int[] next_indexes = new int[3];
     for(i = 0; i < 3; i++){
       int current_face = index_keys[i];
-      int[] current_indexes = rotation_indexes.get(current_face);
+      int[] current_indexes = this.rotation_indexes.get(current_face);
       next_face = index_keys[i + 1];
-      next_indexes = rotation_indexes.get(next_face);
+      next_indexes = this.rotation_indexes.get(next_face);
 
       for(int j = 0; j < 3; j++){
         this.cube[current_face / 10][current_indexes[j]] = this.cube[next_face / 10][next_indexes[j]];

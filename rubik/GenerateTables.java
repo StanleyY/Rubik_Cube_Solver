@@ -48,16 +48,19 @@ class GenerateTables {
       Cube current = s.pop();
       int level = current.level;
       if (found % 100000 == 0) System.out.printf("found: %d\n", found);
+      int corner_index = current.getEncodedCorners();
+      int edge0_index = current.getEncodedEdges(0);
+      int edge1_index = current.getEncodedEdges(1);
 
-      if (getEdge0Value(current.getEncodedEdges(0)) > level) {
-        insertEdge0Value(current.getEncodedEdges(0), level);
+      if (getEdge0Value(edge0_index) > level) {
+        insertEdge0Value(edge0_index, level);
       }
-      if (getEdge1Value(current.getEncodedEdges(1)) > level) {
-        insertEdge1Value(current.getEncodedEdges(1), level);
+      if (getEdge1Value(edge1_index) > level) {
+        insertEdge1Value(edge1_index, level);
       }
 
-      if (getCornerValue(current.getEncodedCorners()) > level) {
-        insertCornerValue(current.getEncodedCorners(), level);
+      if (getCornerValue(corner_index) > level) {
+        insertCornerValue(corner_index, level);
 
         if (level < 11){ // Max moves is 11.
           for(int face = 0; face < 6; face++){
