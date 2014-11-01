@@ -18,7 +18,41 @@ class Solve {
 
   static void solveCube(){
     int threshold = h(input_cube);
-    PriorityQueue<CubeNode> queue = new PriorityQueue<CubeNode>(100000000, new CubeNodeComparator());
+    while (true) {
+      threshold = search(new CubeNode(input_cube, h(input_cube)), threshold, "");
+      System.out.println("New Threshold: " + threshold);
+    }
+  }
+
+
+  static int search(CubeNode cn, int bound, String s){
+    int f = cn.value;
+    if (f > bound) return f;
+    if (goalTest(cn.cube)) {System.out.println("FOUND IT: " + translateMoves(s) + " Length: " + s.length() / 2); System.out.println(new java.util.Date()); System.exit(0);}
+    int min = 400;
+    PriorityQueue<CubeNode> neighbors = generateNeighbors(cn.cube);
+    while (neighbors.size() > 0){
+      CubeNode n = neighbors.poll();
+      int x = search(n, bound, s + n.move);
+      if (x < min) min = x;
+    }
+    return min;
+  }
+
+
+  static PriorityQueue<CubeNode> generateNeighbors(Cube c){
+    PriorityQueue<CubeNode> queue = new PriorityQueue<CubeNode>(18, new CubeNodeComparator());
+    for(int face = 0; face < 6; face++){
+      if (face != c.last_face){
+        for(int i = 1; i < 4; i++){
+          Cube node = c.rotate(face, i);
+          node.setLevel(c.level + 1);
+          node.setFace(face);
+          queue.offer(new CubeNode(node, c.level + 1 + h(node), face + ""  + i));
+        }
+      }
+    }
+    return queue;
   }
 
 
@@ -34,6 +68,16 @@ class Solve {
       if (!Arrays.equals(c.cube[i], goal_cube.cube[i])) return false;
     }
     return true;
+  }
+
+
+  static String translateMoves(String s){
+    char[] letters = new char[] {'R','G','Y','B','O','W'};
+    char[] temp = s.toCharArray();
+    for (int i = 0; i < temp.length; i = i + 2){
+      temp[i] = letters[Character.getNumericValue(temp[i])];
+    }
+    return new String(temp);
   }
 
 
@@ -102,6 +146,8 @@ class Solve {
       fs.read(buffer);
       char[] temp = new String(buffer).replaceAll("\\s+", "").toCharArray(); //Remove whitespace
       input_cube = new Cube(temp);
+      input_cube.setFace(7);
+      input_cube.setLevel(0);
       fs.close();
     }catch(Exception e){
       e.printStackTrace();
@@ -115,11 +161,10 @@ class Solve {
       System.exit(1);
     }
 
-    Date start = new java.util.Date();
+    System.out.println(new java.util.Date());
     read();
     readInput(args[0]);
-
-    System.out.printf("Start Time: %s\nEnd Time: %s\n", start, new java.util.Date());
+    solveCube();
   }
 
 }
