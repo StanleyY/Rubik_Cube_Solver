@@ -22,7 +22,7 @@ W = 5
   public char[][] cube;
   public int level;
   public int last_face;
-  public Map<Integer, int[]> rotation_indexes = initRotationIndex();
+  public Map<Integer, int[]> rotation_indexes = null;
 
   public Cube(){
     this.cube = new char[6][9];
@@ -171,6 +171,7 @@ W = 5
                                         new int[]{2,12,42,32}, new int[]{3, 23,43,53},
                                         new int[]{24,14,54,34}, new int[]{45,15,5,35}};
     int[] index_keys = rotation_keys[face];
+    if (this.rotation_indexes == null) {initRotationIndex();}
     int i = 0;
 
     // Storing the first values for later displacing.
@@ -199,7 +200,7 @@ W = 5
   }
 
 
-  private Map<Integer, int[]> initRotationIndex(){
+  private void initRotationIndex(){
     Map<Integer, int[]> indexes = new HashMap<Integer, int[]>();
     indexes.put(50, new int[]{6,7,8});
     indexes.put(10, new int[]{2,1,0});
@@ -231,7 +232,7 @@ W = 5
     indexes.put(35, new int[]{8,5,2});
     indexes.put(45, new int[]{6,7,8});
 
-    return indexes;
+    this.rotation_indexes = indexes;
   }
 
 
