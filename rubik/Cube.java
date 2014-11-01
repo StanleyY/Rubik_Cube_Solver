@@ -21,6 +21,7 @@ W = 5
 
   public char[][] cube;
   public int level;
+  public last_face;
 
   public Cube(){
     this.cube = new char[6][9];
@@ -57,6 +58,10 @@ W = 5
 
   public void setLevel(int level){
     this.level = level;
+  }
+
+  public void setFace(int face){
+    this.last_face = face;
   }
 
 
