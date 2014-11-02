@@ -104,7 +104,6 @@ class GenerateTables {
     while(!s.empty()){
       Cube current = s.pop();
       int level = current.level;
-      if (found % 100000 == 0) System.out.printf("found: %d\n", found);
       int corner_index = current.getEncodedCorners();
       int current_edge0 = current.getEncodedEdges(0);
       int current_edge1 = current.getEncodedEdges(1);
@@ -117,6 +116,8 @@ class GenerateTables {
       }
       if (getCornerValue(corner_index) > level) {
         insertCornerValue(corner_index, level);
+	if (found < Long.MAX_VALUE) found++;
+	if (found % 1000000 == 0) System.out.printf("Passed %d Corners\n", found);
 
         if (level < 11){ // Max moves is 11.
           for(int face = 0; face < 6; face++){
@@ -124,7 +125,6 @@ class GenerateTables {
               for(int i = 1; i < 4; i++){
                 Cube node = current.rotate(face, i);
                 if (getCornerValue(node.getEncodedCorners()) > level + 1){
-                  if (found < Long.MAX_VALUE) found++;
                   node.setLevel(level + 1);
                   node.setFace(face);
                   if (level + 1 < limit) {
@@ -388,7 +388,7 @@ class GenerateTables {
     try {
       initValues();
       generateEdgeValuesID();
-      //generateCornerValues();
+      generateCornerValues();
       FileOutputStream output = new FileOutputStream("CornerValues");
       output.write(corner_values);
       output.close();
