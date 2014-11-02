@@ -413,6 +413,7 @@ class GenerateTables {
     write();
     //read();
     Cube c = new Cube("ORWORRGGYWWRWORGYRGGYBYBOBGOOBWYRBWGOGYYOBYROBWYRWWGBB");
+    System.out.println("Corner: " + c.getEncodedCorners());
     System.out.println("Edge0: " + c.getEncodedEdges(0));
     System.out.println("Edge1: " + c.getEncodedEdges(1));
     System.out.printf("Corners: %d, Edge 1: %d , Edge 2, %d\n", getCornerValue(c.getEncodedCorners()), getEdge0Value(c.getEncodedEdges(0)), getEdge1Value(c.getEncodedEdges(1)));

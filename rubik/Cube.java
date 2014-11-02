@@ -325,7 +325,7 @@ W = 5
 
 
   private int[] getEdgeOrientation() {
-    int[] edges_values = new int[]{1,1,1,1,1,1,1,1,1,1,1,1};
+    int[] edges_values = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
     int index = 0;
     int pos = 1;
     char face = '0';
@@ -336,7 +336,7 @@ W = 5
         if(!(face == 'Y' || face == 'W')){
           side = cube[j - 2][pos];
           if(side == 'Y' || side == 'W'){
-            edges_values[index] = 2;
+            edges_values[index] = 1;
           }
         }
         index++;
@@ -349,7 +349,7 @@ W = 5
         face = cube[i][j];
         if(!(face == 'Y' || face == 'W')){
           if (face == 'B' || face == 'G') {
-            edges_values[index] = 2;
+            edges_values[index] = 1;
           }
           else { // Red/Yellow face, confirm if it is a Red/Yellow + Blue/Green.
             if (i == 5 && (j == 3 || j == 5)){
@@ -360,7 +360,7 @@ W = 5
             }
             side = cube[sideFace(i, j)][pos];
             if(side == 'Y' || side == 'W'){
-              edges_values[index] = 2;
+              edges_values[index] = 1;
             }
           }
         }
@@ -402,26 +402,27 @@ W = 5
 
 
   public int getEncodedEdges(int half){
-    //System.out.println("NEW");
     int value = 0;
     int[] edgeGroupOrientation = Arrays.copyOfRange(getEdgeOrientation(), half * 6, half * 6 + 6); // half is either 0 or 1.
     ArrayList<Integer> input_list = new ArrayList<Integer>(12);
     for(int x : this.getEdges()) {
       input_list.add(x);
     }
+
+
     int[] weights = new int[]{1774080, 80640, 4032, 224, 14, 1};
     int[] sequence = new int[6];
     int index = 0;
     for (int j = 11; j > 5; j--){
-      sequence[index] = input_list.indexOf(j) + 1;
+      sequence[index] = input_list.indexOf(j);
       input_list.remove(input_list.indexOf(j));
       index++;
     }
 
     //System.out.println("VALUE BEFORE: " + value);
     for(int i = 0; i < 6; i++){
-    //  System.out.printf("Sequence: %d, Weight: %d, Orientation: %d. Total: %d\n", sequence[i], weights[i], edgeGroupOrientation[i], (sequence[i] * weights[i] - 1) * edgeGroupOrientation[i]);
-      value += (sequence[i] * edgeGroupOrientation[i] - 1) * weights[i];
+      //System.out.printf("Sequence: %d, Weight: %d, Orientation: %d. Total: %d\n", sequence[i], weights[i], edgeGroupOrientation[i], (sequence[i] * 2 + edgeGroupOrientation[i]) * weights[i]);
+      value += (sequence[i] * 2 + edgeGroupOrientation[i]) * weights[i];
     }
 
     //System.out.println("Value: " + value);
