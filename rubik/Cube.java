@@ -17,8 +17,6 @@ W = 5
 
 */
 
-  public static final String GOAL_STATE = "RRRRRRRRRGGGYYYBBBGGGYYYBBBGGGYYYBBBOOOOOOOOOWWWWWWWWW";
-
   public char[][] cube;
   public int level;
   public int last_face;
