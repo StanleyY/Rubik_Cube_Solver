@@ -20,7 +20,6 @@ W = 5
   public char[][] cube;
   public int level;
   public int last_face;
-  public Map<Integer, int[]> rotation_indexes = null;
 
   public Cube(){
     this.cube = new char[6][9];
@@ -167,27 +166,27 @@ W = 5
   private void rotateCubies(int face){
     int[] index_keys = null;
     switch (face) {
-      case 0: index_keys = new int[]{50,10,20,30};
+      case 0: index_keys = new int[]{5,1,2,3};
               break;
-      case 1: index_keys = new int[]{1,51,41,21};
+      case 1: index_keys = new int[]{0,5,4,2};
               break;
-      case 2: index_keys = new int[]{2,12,42,32};
+      case 2: index_keys = new int[]{0,1,4,3};
               break;
-      case 3: index_keys = new int[]{3, 23,43,53};
+      case 3: index_keys = new int[]{0,2,4,5};
               break;
-      case 4: index_keys = new int[]{24,14,54,34};
+      case 4: index_keys = new int[]{2,1,5,3};
               break;
-      case 5: index_keys = new int[]{45,15,5,35};
+      case 5: index_keys = new int[]{4,1,0,3};
               break;
       default: break;
     }
-    if (this.rotation_indexes == null) {initRotationIndex();}
+    int[][] rotation_indexes = initRotationIndex(face);
     int i = 0;
 
     // Storing the first values for later displacing.
     char[] temp = new char[3];
-    for(int x: this.rotation_indexes.get(index_keys[0])){
-      temp[i] = this.cube[index_keys[0] / 10][x];
+    for(int x: rotation_indexes[0]){
+      temp[i] = this.cube[index_keys[0]][x];
       i++;
     }
 
@@ -195,54 +194,31 @@ W = 5
     int[] next_indexes = new int[3];
     for(i = 0; i < 3; i++){
       int current_face = index_keys[i];
-      int[] current_indexes = this.rotation_indexes.get(current_face);
+      int[] current_indexes = rotation_indexes[i];
       next_face = index_keys[i + 1];
-      next_indexes = this.rotation_indexes.get(next_face);
+      next_indexes = rotation_indexes[i + 1];
 
       for(int j = 0; j < 3; j++){
-        this.cube[current_face / 10][current_indexes[j]] = this.cube[next_face / 10][next_indexes[j]];
+        this.cube[current_face][current_indexes[j]] = this.cube[next_face][next_indexes[j]];
       }
     }
 
     for(int j = 0; j < 3; j++){
-      this.cube[next_face / 10][next_indexes[j]] = temp[j];
+      this.cube[next_face][next_indexes[j]] = temp[j];
     }
   }
 
 
-  private void initRotationIndex(){
-    Map<Integer, int[]> indexes = new HashMap<Integer, int[]>();
-    indexes.put(50, new int[]{6,7,8});
-    indexes.put(10, new int[]{2,1,0});
-    indexes.put(20, new int[]{2,1,0});
-    indexes.put(30, new int[]{2,1,0});
-
-    indexes.put(1, new int[]{0,3,6});
-    indexes.put(21, new int[]{0,3,6});
-    indexes.put(41, new int[]{0,3,6});
-    indexes.put(51, new int[]{0,3,6});
-
-    indexes.put(2, new int[]{6,7,8});
-    indexes.put(12, new int[]{8,5,2});
-    indexes.put(32, new int[]{0,3,6});
-    indexes.put(42, new int[]{2,1,0});
-
-    indexes.put(3, new int[]{8,5,2});
-    indexes.put(23, new int[]{8,5,2});
-    indexes.put(43, new int[]{8,5,2});
-    indexes.put(53, new int[]{8,5,2});
-
-    indexes.put(14, new int[]{6,7,8});
-    indexes.put(24, new int[]{6,7,8});
-    indexes.put(34, new int[]{6,7,8});
-    indexes.put(54, new int[]{2,1,0});
-
-    indexes.put(5, new int[]{2,1,0});
-    indexes.put(15, new int[]{0,3,6});
-    indexes.put(35, new int[]{8,5,2});
-    indexes.put(45, new int[]{6,7,8});
-
-    this.rotation_indexes = indexes;
+  private int[][] initRotationIndex(int face){
+    switch(face) {
+      case 0: return new int[][]{new int[]{6,7,8},new int[]{2,1,0}, new int[]{2,1,0}, new int[]{2,1,0}};
+      case 1: return new int[][]{new int[]{0,3,6}, new int[]{0,3,6}, new int[]{0,3,6}, new int[]{0,3,6}};
+      case 2: return new int[][]{new int[]{6,7,8}, new int[]{8,5,2}, new int[]{2,1,0}, new int[]{0,3,6}};
+      case 3: return new int[][]{new int[]{8,5,2}, new int[]{8,5,2}, new int[]{8,5,2}, new int[]{8,5,2}};
+      case 4: return new int[][]{new int[]{6,7,8}, new int[]{6,7,8}, new int[]{2,1,0}, new int[]{6,7,8}};
+      case 5: return new int[][]{new int[]{6,7,8}, new int[]{0,3,6}, new int[]{2,1,0}, new int[]{8,5,2}};
+      default: return null;
+    }
   }
 
 
@@ -399,7 +375,7 @@ W = 5
       input_list.add(x);
     }
     int[] weights = new int[]{5040, 720, 120, 24, 6, 2, 1};
-    int[] sequence = new int[7];;
+    int[] sequence = new int[7];
     for (int j = 0; j < 7; j++){
       sequence[j] = input_list.indexOf(j);
       input_list.remove(input_list.indexOf(j));
