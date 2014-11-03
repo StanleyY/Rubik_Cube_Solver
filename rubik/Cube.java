@@ -283,24 +283,64 @@ W = 5
 
 
   private int[] getEdges(){
-    List<String> keys = Arrays.asList("RW", "GR", "BR", "RY", "GW", "GY", "BY", "BW", "OY", "GO", "BO", "OW");
-    int[] output = new int[12];
-
     byte[][] edges = new byte[][]{
       {cube[1], cube[52]}, {cube[3], cube[10]}, {cube[5], cube[28]}, {cube[7], cube[19]},
       {cube[12], cube[48]}, {cube[14], cube[21]}, {cube[23], cube[30]}, {cube[32], cube[50]},
       {cube[37], cube[25]}, {cube[39], cube[16]}, {cube[41], cube[34]}, {cube[43], cube[46]}
     };
 
-    String temp = "";
+    int[] output = new int[12];
     for (int i = 0; i < 12; i++){
-      Arrays.sort(edges[i]);
-      temp = new String(edges[i]);
-      output[i] = keys.indexOf(temp);
+      output[i] = getEdgesHelper(edges[i][0], edges[i][1]);
     }
 
     return output;
   }
+
+
+  private int getEdgesHelper(byte a, byte b){
+    //  0     1     2    3     4      5     6    7     8     9     10     11
+    //("RW", "GR", "BR", "RY", "GW", "GY", "BY", "BW", "OY", "GO", "BO", "OW");
+    if (a > b){
+      a = (byte)(a^b);
+      b = (byte)(a^b);
+      a = (byte)(a^b);
+    }
+    if (a == 'B'){
+      switch(b){
+        case 'R': return 2;
+        case 'O': return 10;
+        case 'Y': return 6;
+        case 'W': return 7;
+        default: return -1;
+      }
+    }
+    if (a == 'G'){
+      switch(b){
+        case 'R': return 1;
+        case 'O': return 9;
+        case 'Y': return 5;
+        case 'W': return 4;
+        default: return -1;
+      }
+    }
+    if (a == 'O'){
+      switch(b){
+        case 'Y': return 8;
+        case 'W': return 11;
+        default: return -1;
+      }
+    }
+    if (a == 'R'){
+      switch(b){
+        case 'Y': return 3;
+        case 'W': return 0;
+        default: return -1;
+      }
+    }
+    return -1;
+  }
+
 
 
   private int[] getEdgeOrientation() {
