@@ -13,7 +13,7 @@ class GenerateTables {
   static byte[] corner_values = new byte [44089920];
   static byte[] edge0_values = new byte [21288960];
   static byte[] edge1_values = new byte [21288960];
-  static int edgesFound = 0;
+  static long edgesFound = 1;
 
   static void errorCheck(){
     int corners = 0;
@@ -72,12 +72,10 @@ class GenerateTables {
     Stack<Cube> s = new Stack<Cube>();
     Stack<Cube> next = new Stack<Cube>();
     s.push(c);
-    int limit = 5; // limit of 6 needs ~1.7 gb of RAM to run reasonably. limit of 7 needs >4gb of RAM.
-    long found = 1;
+    int limit = 5;
     while(!s.empty()){
       Cube current = s.pop();
       int level = current.level;
-      if (found % 100000 == 0) System.out.printf("found: %d\n", found);
       int edge0_index = current.getEncodedEdges(0);
       int edge1_index = current.getEncodedEdges(1);
 
@@ -93,8 +91,14 @@ class GenerateTables {
           if (face != current.last_face){
             for(int i = 1; i < 4; i++){
               Cube node = current.rotate(face, i);
-              if (getEdge0Value(node.getEncodedEdges(0)) > level + 1 || getEdge1Value(node.getEncodedEdges(1)) > level + 1){
-                if (found < Long.MAX_VALUE) found++;
+              int node_edge0 = node.getEncodedEdges(0);
+              int node_edge1 = node.getEncodedEdges(1);
+              int existing_edge0_value = getEdge0Value(node_edge0);
+              int existing_edge1_value = getEdge1Value(node_edge1);
+
+              if (!(existing_edge0_value < level + 1 && existing_edge1_value < level + 1)){
+                if (edgesFound < Long.MAX_VALUE) edgesFound++;
+                if(edgesFound % 1000000 == 0) System.out.printf("Over %d Edges Found\n", edgesFound);
                 node.setLevel(level + 1);
                 node.setFace(face);
                 if (level + 1 < limit) {
@@ -141,8 +145,9 @@ class GenerateTables {
       }
       if (getCornerValue(corner_index) > level) {
         insertCornerValue(corner_index, level);
-	if (found < Long.MAX_VALUE) found++;
-	if (found % 1000000 == 0) System.out.printf("Passed %d Corners\n", found);
+
+      if (found < Long.MAX_VALUE) found++;
+      if (found % 1000000 == 0) System.out.printf("Passed %d Corners\n", found);
 
         if (level < 11){ // Max moves is 11.
           for(int face = 0; face < 6; face++){
@@ -225,7 +230,6 @@ class GenerateTables {
     Stack<Cube> s = new Stack<Cube>();
     s.push(goal);
     int limit = 1;
-    int found = 1;
 
     while (limit < 8){
       while(!s.empty()){
@@ -239,10 +243,10 @@ class GenerateTables {
               int node_edge1 = node.getEncodedEdges(1);
               int existing_edge0_value = getEdge0Value(node_edge0);
               int existing_edge1_value = getEdge1Value(node_edge1);
-	      if (node_edge0 == 6228495 || node_edge1 == 6147631){
-		  System.out.printf("edge0: %d, value: %d\nedge1: %d, value: %d\nlevel: %d\n",node_edge0, existing_edge0_value, node_edge1, existing_edge1_value,level);
-		  node.printCube();
-	      }
+              if (node_edge0 == 6228495 || node_edge1 == 6147631){
+                System.out.printf("edge0: %d, value: %d\nedge1: %d, value: %d\nlevel: %d\n",node_edge0, existing_edge0_value, node_edge1, existing_edge1_value,level);
+                node.printCube();
+              }
               if (level == limit){
                 if (limit == 7) {
                   node.setLevel(level);
@@ -251,13 +255,13 @@ class GenerateTables {
                 }
                 else {
                   if (existing_edge0_value > level){
-                    found++;
-                    if(found % 1000000 == 0) System.out.printf("Passed %d edges found.\n", found);
+                    edgesFound++;
+                    if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
                     insertEdge0Value(node_edge0, level);
                   }
                   if (existing_edge1_value > level){
-                    found++;
-                    if(found % 1000000 == 0) System.out.printf("Passed %d edges found.\n", found);
+                    edgesFound++;
+                    if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
                     insertEdge1Value(node_edge1, level);
                   }
                 }
@@ -276,7 +280,6 @@ class GenerateTables {
       limit++;
       System.out.println("Current Edge Limit: " + limit);
       s.push(goal);
-      if (limit == 7) edgesFound = found;
     }
     System.out.println("Edges Found: " + edgesFound);
   }
@@ -301,9 +304,9 @@ class GenerateTables {
         insertEdge1Value(current_edge1, level);
       }
 
-     if (current_edge0 == 6228495 || current_edge1 == 6147631){
-	  System.out.printf("edge0: %d, value: %d\nedge1: %d, value: %d\nlevel: %d\n",current_edge0, getEdge0Value(current_edge0), current_edge1, getEdge1Value(current_edge1),level);
-	  current.printCube();
+      if (current_edge0 == 6228495 || current_edge1 == 6147631){
+        System.out.printf("edge0: %d, value: %d\nedge1: %d, value: %d\nlevel: %d\n",current_edge0, getEdge0Value(current_edge0), current_edge1, getEdge1Value(current_edge1),level);
+        current.printCube();
       }
 
       if (level < 10){
@@ -316,7 +319,7 @@ class GenerateTables {
               int existing_edge0_value = getEdge0Value(node_edge0);
               int existing_edge1_value = getEdge1Value(node_edge1);
 
-              if (existing_edge0_value > level + 1 || existing_edge1_value > level + 1){
+              if (!(existing_edge0_value < level + 1 && existing_edge1_value < level + 1)){
                 node.setLevel(level + 1);
                 node.setFace(face);
                 s.push(node);
@@ -396,21 +399,21 @@ class GenerateTables {
   static void read(){
     System.out.println("Starting reading process");
     try {
-     FileInputStream input = new FileInputStream("CornerValues");
-     input.read(corner_values);
-     input.close();
+      FileInputStream input = new FileInputStream("CornerValues");
+      input.read(corner_values);
+      input.close();
 
-     input = new FileInputStream("Edge0Values");
-     input.read(edge0_values);
-     input.close();
+      input = new FileInputStream("Edge0Values");
+      input.read(edge0_values);
+      input.close();
 
-     input = new FileInputStream("Edge1Values");
-     input.read(edge1_values);
-     input.close();
-     errorCheck();
+      input = new FileInputStream("Edge1Values");
+      input.read(edge1_values);
+      input.close();
+      errorCheck();
     } catch (java.io.IOException e) {
-     e.printStackTrace();
-     System.exit(1);
+      e.printStackTrace();
+      System.exit(1);
     }
     System.out.println("Done loading files");
    }
@@ -419,8 +422,8 @@ class GenerateTables {
     System.out.println("Starting writing process");
     try {
       initValues();
-      generateEdgeValuesID();
-      //generateCornerValues();
+      generateEdgeValues();
+      generateCornerValues();
       FileOutputStream output = new FileOutputStream("CornerValues");
       output.write(corner_values);
       output.close();
