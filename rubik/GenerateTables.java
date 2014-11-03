@@ -16,15 +16,40 @@ class GenerateTables {
   static int edgesFound = 0;
 
   static void errorCheck(){
-    int total = 0;
-    for(int i = 0; i < corner_values.length; i++){
+    int corners = 0;
+    int edge0 = 0;
+    int edge0_u = 0;
+    int edge1 = 0;
+    int edge1_u = 0;
+    for(int i = 0; i < corner_values.length * 2; i++){
       int val = getCornerValue(i);
       if(val < 0 || val > 11) {
-        total += 1;
+        corners += 1;
         //System.out.printf("VALUE UNFILLED AT INDEX %d: %d\n", i, val);
       }
     }
-    System.out.println("TOTAL UNFILLED " + total);
+    for(int i = 0; i < edge0_values.length * 2; i++){
+      int val1 = getEdge0Value(i);
+      int val2 = getEdge1Value(i);
+      if(val1 > 10){
+        if(val1 > 11){
+          edge0_u++;
+        }
+        else edge0++;
+      }
+      if(val2 > 10){
+        if(val2 > 11){
+          edge1_u++;
+        }
+        else edge1++;
+      }
+    }
+    System.out.println("TOTAL UNFILLED CORNERS: " + corners);
+    System.out.println("TOTAL OVER 11 EDGE 0: " + edge0);
+    System.out.println("TOTAL OVER 11 EDGE 1: " + edge1);
+    System.out.println("TOTAL OVER 15 EDGE 0: " + edge0_u);
+    System.out.println("TOTAL OVER 15 EDGE 1: " + edge1_u);
+
   }
 
   static void initValues(){
@@ -388,7 +413,7 @@ class GenerateTables {
     try {
       initValues();
       generateEdgeValuesID();
-      generateCornerValues();
+      //generateCornerValues();
       FileOutputStream output = new FileOutputStream("CornerValues");
       output.write(corner_values);
       output.close();
@@ -413,6 +438,7 @@ class GenerateTables {
     write();
     //read();
     Cube c = new Cube("ORWORRGGYWWRWORGYRGGYBYBOBGOOBWYRBWGOGYYOBYROBWYRWWGBB");
+    c.printCube();
     System.out.println("Corner: " + c.getEncodedCorners());
     System.out.println("Edge0: " + c.getEncodedEdges(0));
     System.out.println("Edge1: " + c.getEncodedEdges(1));
