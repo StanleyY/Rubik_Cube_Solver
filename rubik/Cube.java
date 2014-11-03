@@ -165,10 +165,22 @@ W = 5
 
 
   private void rotateCubies(int face){
-    int[][] rotation_keys = new int[][]{new int[]{50,10,20,30}, new int[]{1,51,41,21},
-                                        new int[]{2,12,42,32}, new int[]{3, 23,43,53},
-                                        new int[]{24,14,54,34}, new int[]{45,15,5,35}};
-    int[] index_keys = rotation_keys[face];
+    int[] index_keys = null;
+    switch (face) {
+      case 0: index_keys = new int[]{50,10,20,30};
+              break;
+      case 1: index_keys = new int[]{1,51,41,21};
+              break;
+      case 2: index_keys = new int[]{2,12,42,32};
+              break;
+      case 3: index_keys = new int[]{3, 23,43,53};
+              break;
+      case 4: index_keys = new int[]{24,14,54,34};
+              break;
+      case 5: index_keys = new int[]{45,15,5,35};
+              break;
+      default: break;
+    }
     if (this.rotation_indexes == null) {initRotationIndex();}
     int i = 0;
 
