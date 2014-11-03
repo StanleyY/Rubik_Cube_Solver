@@ -64,7 +64,7 @@ class Solve {
 
   static boolean goalTest(Cube c){
     for (int i = 0; i < 6; i++){
-      if (!Arrays.equals(c.cube[i], goal_cube.cube[i])) return false;
+      if (!Arrays.equals(c.cube, goal_cube.cube)) return false;
     }
     return true;
   }
@@ -129,6 +129,8 @@ class Solve {
       input = new FileInputStream("oldEdge1Values");
       input.read(edge1_values);
       input.close();
+
+      forceAdmission();
     } catch (java.io.IOException e) {
       e.printStackTrace();
       System.exit(1);
@@ -151,6 +153,37 @@ class Solve {
       e.printStackTrace();
     }
   }
+
+
+  static void forceAdmission(){
+    for (int i = 0; i < edge0_values.length; i++){
+      if(getEdge0Value(i) > 10) insertEdge0Value(i, 0);
+      if(getEdge1Value(i) > 10) insertEdge1Value(i, 0);
+    }
+  }
+
+
+  static void insertEdge0Value(int index, int level){
+    byte current = edge0_values[index / 2];
+    if((index & 1) == 0){
+      edge0_values[index / 2] = (byte)((level << 4) | (current & right) );
+    }
+    else{
+      edge0_values[index / 2] = (byte)( (current & left) | level );
+    }
+  }
+
+
+  static void insertEdge1Value(int index, int level){
+    byte current = edge1_values[index / 2];
+    if((index & 1) == 0){
+      edge1_values[index / 2] = (byte)((level << 4) | (current & right) );
+    }
+    else{
+      edge1_values[index / 2] = (byte)( (current & left) | level );
+    }
+  }
+
 
   // Generate every cube up to 11 moves and sees if there are any unadmissable heuristics.
   static void randomCubeTest(){

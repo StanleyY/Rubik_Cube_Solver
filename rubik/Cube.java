@@ -14,15 +14,15 @@ Y = 2
 B = 3
 O = 4
 W = 5
-
 */
 
-  public char[][] cube;
+  public byte[] cube;
   public int level;
   public int last_face;
+  public Map<Integer, int[]> rotation_indexes = null;
 
   public Cube(){
-    this.cube = new char[6][9];
+    this.cube = new byte[54];
   }
 
 
@@ -43,12 +43,12 @@ W = 5
   }
 
 
-  public Cube(char[][] input){
+  public Cube(byte[] input){
     this.cube = this.generateCube(input);
   }
 
 
-  public Cube(char[][] input, int level){
+  public Cube(byte[] input, int level){
     this.cube = this.generateCube(input);
     this.level = level;
   }
@@ -63,40 +63,47 @@ W = 5
   }
 
 
-  private char[][] generateCube(char[] input){
-    char[][] output = new char[6][9];
-    int index = 0;
-    int j;
-    int x = 0;
-    for (int i = 0; i < 6; i++){
-      j = 0;
-      if (i < 1 || i > 3) {
-        for (; j < 9; j++) {
-          output[i][j] = input[index];
-          index++;
-        }
-      }
-      else{
-        for (j = x; j < x+3; j++){
-          output[i][j] = input[index];
-          index++;
-        }
-        if(i > 2 && index < 36){
-          i = 0;
-          x += 3;
-        }
-      }
+  private byte[] generateCube(char[] input){
+    byte[] output = new byte[54];
+
+    for (int i = 0; i < 9; i++){
+      output[i] = (byte)input[i];
     }
+
+    int index = 9;
+    for (int i = 9; i < 18; i = i + 3){
+      output[index] = (byte)input[i];
+      index++;
+      output[index] = (byte)input[i+1];
+      index++;
+      output[index] = (byte)input[i+2];
+      index++;
+      output[index] = (byte)input[i + 9];
+      index++;
+      output[index] = (byte)input[i + 10];
+      index++;
+      output[index] = (byte)input[i + 11];
+      index++;
+      output[index] = (byte)input[i + 18];
+      index++;
+      output[index] = (byte)input[i + 19];
+      index++;
+      output[index] = (byte)input[i + 20];
+      index++;
+    }
+
+    for (int i = 36; i < 54; i++){
+      output[i] = (byte)input[i];
+    }
+
     return output;
   }
 
   // Deep cloning the input.
-  private char[][] generateCube(char[][] input){
-    char[][] temp = new char[6][9];
-    for (int i = 0; i < 6; i++){
-      for(int j = 0; j < 9; j++){
-        temp[i][j] = input[i][j];
-      }
+  private byte[] generateCube(byte[] input){
+    byte[] temp = new byte[54];
+    for (int i = 0; i < 54; i++){
+      temp[i] = input[i];
     }
     return temp;
   }
@@ -107,33 +114,23 @@ W = 5
   int i = 0;
   while (i < 9){
     if(i % 3 == 0) System.out.printf("\n   ");
-    System.out.printf("%c", this.cube[0][i]);
+    System.out.printf("%c", (char)this.cube[i]);
     i++;
   }
 
-  i = 1;
-  int j = 0;
-  while (j < 9){
+  while (i < 18){
     System.out.printf("\n");
-    while (i < 4){
-      System.out.printf("%c", this.cube[i][j]);
-      j++;
-      if (j % 3 == 0) {
-        j = j - 3;
-        i++;
-      }
-    }
-    j=j+3;
-    i = 1;
+    System.out.printf("%c%c%c", (char)this.cube[i], (char)this.cube[i+1], (char)this.cube[i+2]);
+    System.out.printf("%c%c%c", (char)this.cube[i+9], (char)this.cube[i+10], (char)this.cube[i+11]);
+    System.out.printf("%c%c%c", (char)this.cube[i+18], (char)this.cube[i+19], (char)this.cube[i+20]);
+    i = i + 3;
   }
 
-  for (int x: new int[]{4, 5}){
-    i = 0;
-    for (char c : this.cube[x]){
-      if(i % 3 == 0) System.out.printf("\n   ");
-      System.out.printf("%c", c);
-      i++;
-    }
+  i = 36;
+  while (i < 54){
+    if(i % 3 == 0) System.out.printf("\n   ");
+    System.out.printf("%c", (char)this.cube[i]);
+    i++;
   }
   System.out.printf("\n\n");
 }
@@ -144,18 +141,18 @@ W = 5
     if (face < 0 || face > 5) {throw new IllegalArgumentException("Invalid face, must be between 0 and 5.");}
 
     Cube output = new Cube(this.cube);
-    char temp;
+    byte temp;
     while(turns > 0){
-      temp = output.cube[face][0];
-      output.cube[face][0] = output.cube[face][6];
-      output.cube[face][6] = output.cube[face][8];
-      output.cube[face][8] = output.cube[face][2];
-      output.cube[face][2] = temp;
-      temp = output.cube[face][1];
-      output.cube[face][1] = output.cube[face][3];
-      output.cube[face][3] = output.cube[face][7];
-      output.cube[face][7] = output.cube[face][5];
-      output.cube[face][5] = temp;
+      temp = output.cube[face * 9];
+      output.cube[face * 9] = output.cube[face * 9 + 6];
+      output.cube[face * 9 + 6] = output.cube[face * 9 + 8];
+      output.cube[face * 9 + 8] = output.cube[face * 9 + 2];
+      output.cube[face * 9 + 2] = temp;
+      temp = output.cube[face * 9 + 1];
+      output.cube[face * 9 + 1] = output.cube[face * 9 + 3];
+      output.cube[face * 9 + 3] = output.cube[face * 9 + 7];
+      output.cube[face * 9 + 7] = output.cube[face * 9 + 5];
+      output.cube[face * 9 + 5] = temp;
       output.rotateCubies(face);
       turns = turns - 1;
     }
@@ -184,9 +181,9 @@ W = 5
     int i = 0;
 
     // Storing the first values for later displacing.
-    char[] temp = new char[3];
+    byte[] temp = new byte[3];
     for(int x: rotation_indexes[0]){
-      temp[i] = this.cube[index_keys[0]][x];
+      temp[i] = this.cube[index_keys[0] * 9 + x];
       i++;
     }
 
@@ -199,12 +196,12 @@ W = 5
       next_indexes = rotation_indexes[i + 1];
 
       for(int j = 0; j < 3; j++){
-        this.cube[current_face][current_indexes[j]] = this.cube[next_face][next_indexes[j]];
+        this.cube[current_face * 9 + current_indexes[j]] = this.cube[next_face * 9 + next_indexes[j]];
       }
     }
 
     for(int j = 0; j < 3; j++){
-      this.cube[next_face][next_indexes[j]] = temp[j];
+      this.cube[next_face * 9 + next_indexes[j]] = temp[j];
     }
   }
 
@@ -221,23 +218,20 @@ W = 5
     }
   }
 
-
   private int[] getCorners() {
     List<String> keys = Arrays.asList("GRW", "BRW", "GRY", "BRY", "GOY", "BOY", "GOW", "BOW");
     int[] output = new int[8];
-    char[][] corners = new char[][]{
-      {cube[0][0], cube[1][0], cube[5][6]},
-      {cube[0][2], cube[5][8], cube[3][2]},
-      {cube[0][6], cube[2][0], cube[1][2]},
-      {cube[0][8], cube[3][0], cube[2][2]},
+    byte[][] corners = new byte[][]{
+      {cube[0], cube[9], cube[51]},
+      {cube[2], cube[53], cube[29]},
+      {cube[6], cube[18], cube[11]},
+      {cube[8], cube[27], cube[20]},
 
-      {cube[4][0], cube[1][8], cube[2][6]},
-      {cube[4][2], cube[2][8], cube[3][6]},
-      {cube[4][6], cube[5][0], cube[1][6]},
-      {cube[4][8], cube[3][8], cube[5][2]}
+      {cube[36], cube[17], cube[24]},
+      {cube[38], cube[26], cube[33]},
+      {cube[42], cube[45], cube[15]},
+      {cube[44], cube[35], cube[47]}
     };
-
-    if (!checkStickers(corners)) return null;
 
     String temp = "";
     for (int i = 0; i < 8; i++){
@@ -250,40 +244,28 @@ W = 5
   }
 
 
-  // Relic of prerefactoring. Can't be easily removed unfortunately. Maybe I'll revisit it later.
-  private boolean checkStickers(char[][] corners){
-    List<String> invalid = Arrays.asList("RWG", "RBW", "RGY", "RYB", "OYG", "OBY", "OGW", "OWB");
-    for (char[] c: corners){
-      if (invalid.indexOf(new String(c)) != -1){
-        return false;
-      }
-    }
-    return true;
-  }
-
-
   // The cube's orientation is originally a base 3 number.
   public int getCornerOrientation(){
     int[] indexes = new int[]{0, 2, 6, 8};
     String total = "";
 
     // TODO: move this to its own function
-    char[][] corners = new char[][]{
-      {cube[0][0], cube[1][0], cube[5][6]},
-      {cube[0][2], cube[5][8], cube[3][2]},
-      {cube[0][6], cube[2][0], cube[1][2]},
-      {cube[0][8], cube[3][0], cube[2][2]},
+    byte[][] corners = new byte[][]{
+      {cube[0], cube[9], cube[51]},
+      {cube[2], cube[53], cube[29]},
+      {cube[6], cube[18], cube[11]},
+      {cube[8], cube[27], cube[20]},
 
-      {cube[4][0], cube[1][8], cube[2][6]},
-      {cube[4][2], cube[2][8], cube[3][6]},
-      {cube[4][6], cube[5][0], cube[1][6]}
+      {cube[36], cube[17], cube[24]},
+      {cube[38], cube[26], cube[33]},
+      {cube[42], cube[45], cube[15]}
     };
 
     int i = 0;
-    for (char[] c : corners){
+    for (byte[] c : corners){
       i = 0;
-      for (char x : c){
-        if( x == 'R' || x == 'O') total = total + i;
+      for (byte x : c){
+        if( x == 'R' || x == 'O') total = total.concat(Integer.toString(i));
         i++;
       }
     }
@@ -295,10 +277,10 @@ W = 5
     List<String> keys = Arrays.asList("RW", "GR", "BR", "RY", "GW", "GY", "BY", "BW", "OY", "GO", "BO", "OW");
     int[] output = new int[12];
 
-    char[][] edges = new char[][]{
-      {cube[0][1], cube[5][7]}, {cube[0][3], cube[1][1]}, {cube[0][5], cube[3][1]}, {cube[0][7], cube[2][1]},
-      {cube[1][3], cube[5][3]}, {cube[1][5], cube[2][3]}, {cube[2][5], cube[3][3]}, {cube[3][5], cube[5][5]},
-      {cube[4][1], cube[2][7]}, {cube[4][3], cube[1][7]}, {cube[4][5], cube[3][7]}, {cube[4][7], cube[5][1]}
+    byte[][] edges = new byte[][]{
+      {cube[1], cube[52]}, {cube[3], cube[10]}, {cube[5], cube[28]}, {cube[7], cube[19]},
+      {cube[12], cube[48]}, {cube[14], cube[21]}, {cube[23], cube[30]}, {cube[32], cube[50]},
+      {cube[37], cube[25]}, {cube[39], cube[16]}, {cube[41], cube[34]}, {cube[43], cube[46]}
     };
 
     String temp = "";
@@ -316,13 +298,13 @@ W = 5
     int[] edges_values = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
     int index = 0;
     int pos = 1;
-    char face = '0';
-    char side = '0';
+    byte face = '0';
+    byte side = '0';
     for (int i: new int[]{0, 4}){
       for(int j: new int[]{3, 5}){
-        face = cube[i][j];
+        face = cube[i * 9 + j];
         if(!(face == 'Y' || face == 'W')){
-          side = cube[j - 2][pos];
+          side = cube[ 9 * (j - 2) + pos];
           if(side == 'Y' || side == 'W'){
             edges_values[index] = 1;
           }
@@ -334,7 +316,7 @@ W = 5
 
     for (int i: new int[]{2, 5}){
       for(int j: new int[]{1, 3, 5, 7}){
-        face = cube[i][j];
+        face = cube[i * 9 + j];
         if(!(face == 'Y' || face == 'W')){
           if (face == 'B' || face == 'G') {
             edges_values[index] = 1;
@@ -346,7 +328,7 @@ W = 5
             else{
               pos = 8 - j;
             }
-            side = cube[sideFace(i, j)][pos];
+            side = cube[sideFace(i, j) * 9 + pos];
             if(side == 'Y' || side == 'W'){
               edges_values[index] = 1;
             }
@@ -375,7 +357,7 @@ W = 5
       input_list.add(x);
     }
     int[] weights = new int[]{5040, 720, 120, 24, 6, 2, 1};
-    int[] sequence = new int[7];
+    int[] sequence = new int[7];;
     for (int j = 0; j < 7; j++){
       sequence[j] = input_list.indexOf(j);
       input_list.remove(input_list.indexOf(j));
@@ -407,19 +389,12 @@ W = 5
       index++;
     }
 
-    //System.out.println("VALUE BEFORE: " + value);
     for(int i = 0; i < 6; i++){
       //System.out.printf("Sequence: %d, Weight: %d, Orientation: %d. Total: %d\n", sequence[i], weights[i], edgeGroupOrientation[i], (sequence[i] * 2 + edgeGroupOrientation[i]) * weights[i]);
       value += (sequence[i] * 2 + edgeGroupOrientation[i]) * weights[i];
     }
 
-    //System.out.println("Value: " + value);
     return value;
   }
-
-
-  /* Generates the fatoradic value of this Cube's permutation of corners or edges.
-    Currently hardcoded for weight values so they don't need to be recomputed everytime.
-  */
 
 }
