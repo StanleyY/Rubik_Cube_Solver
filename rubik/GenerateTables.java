@@ -214,7 +214,10 @@ class GenerateTables {
               int node_edge1 = node.getEncodedEdges(1);
               int existing_edge0_value = getEdge0Value(node_edge0);
               int existing_edge1_value = getEdge1Value(node_edge1);
-
+	      if (node_edge0 == 6228495 || node_edge1 == 6147631){
+		  System.out.printf("edge0: %d, value: %d\nedge1: %d, value: %d\nlevel: %d\n",node_edge0, existing_edge0_value, node_edge1, existing_edge1_value,level);
+		  node.printCube();
+	      }
               if (level == limit){
                 if (limit == 7) {
                   node.setLevel(level);
@@ -253,7 +256,6 @@ class GenerateTables {
     System.out.println("Edges Found: " + edgesFound);
   }
 
-
   static void edgeHelper(Cube c){
     Stack<Cube> s = new Stack<Cube>();
     s.push(c);
@@ -272,6 +274,11 @@ class GenerateTables {
         edgesFound++;
         if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
         insertEdge1Value(current_edge1, level);
+      }
+
+     if (current_edge0 == 6228495 || current_edge1 == 6147631){
+	  System.out.printf("edge0: %d, value: %d\nedge1: %d, value: %d\nlevel: %d\n",current_edge0, getEdge0Value(current_edge0), current_edge1, getEdge1Value(current_edge1),level);
+	  current.printCube();
       }
 
       if (level < 10){
@@ -388,7 +395,7 @@ class GenerateTables {
     try {
       initValues();
       generateEdgeValuesID();
-      generateCornerValues();
+      //generateCornerValues();
       FileOutputStream output = new FileOutputStream("CornerValues");
       output.write(corner_values);
       output.close();
