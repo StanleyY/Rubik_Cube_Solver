@@ -219,8 +219,6 @@ W = 5
   }
 
   private int[] getCorners() {
-    List<String> keys = Arrays.asList("GRW", "BRW", "GRY", "BRY", "GOY", "BOY", "GOW", "BOW");
-    int[] output = new int[8];
     byte[][] corners = new byte[][]{
       {cube[0], cube[9], cube[51]},
       {cube[2], cube[53], cube[29]},
@@ -233,14 +231,38 @@ W = 5
       {cube[44], cube[35], cube[47]}
     };
 
-    String temp = "";
+    int[] output = new int[8];
     for (int i = 0; i < 8; i++){
       Arrays.sort(corners[i]);
-      temp = new String(corners[i]);
-      output[i] = keys.indexOf(temp);
+      output[i] = getCornersHelper(corners[i]);
     }
-
     return output;
+  }
+
+
+  private int getCornersHelper(byte[] b) {
+  //   0      1      2      3      4      5      6      7
+  //("GRW", "BRW", "GRY", "BRY", "GOY", "BOY", "GOW", "BOW")
+    if (b[0] == 'B'){
+      if (b[1] == 'R'){
+        if(b[2] == 'W') return 1; //BRW
+        else return 3; // BRY
+      }
+      else {
+        if(b[2] == 'W') return 7; //BOW
+        else return 5; // BOY
+      }
+    }
+    else {        //I know it is Green now
+      if (b[1] == 'R'){
+        if(b[2] == 'W') return 0; //GRW
+        else return 2; // GRY
+      }
+      else {
+        if(b[2] == 'W') return 6; //GOW
+        else return 4; // GOY
+      }
+    }
   }
 
 
@@ -293,7 +315,6 @@ W = 5
     for (int i = 0; i < 12; i++){
       output[i] = getEdgesHelper(edges[i][0], edges[i][1]);
     }
-
     return output;
   }
 
