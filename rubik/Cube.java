@@ -392,12 +392,14 @@ W = 5
     int[] weights = new int[]{1774080, 80640, 4032, 224, 14, 1};
     int[] sequence = new int[6];
     int index = 0;
-    for (int j = 11; j > 5; j--){
+    for (int j = 11 - (6 * half); j > 5 - (6 * half); j--){
       sequence[index] = input_list.indexOf(j);
       input_list.remove(input_list.indexOf(j));
       index++;
     }
 
+    //System.out.println(Arrays.toString(sequence));
+    //System.out.println(Arrays.toString(edgeGroupOrientation));
     for(int i = 0; i < 6; i++){
       //System.out.printf("Sequence: %d, Weight: %d, Orientation: %d. Total: %d\n", sequence[i], weights[i], edgeGroupOrientation[i], (sequence[i] * 2 + edgeGroupOrientation[i]) * weights[i]);
       value += (sequence[i] * 2 + edgeGroupOrientation[i]) * weights[i];
