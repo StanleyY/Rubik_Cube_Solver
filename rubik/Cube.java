@@ -247,7 +247,7 @@ W = 5
   // The cube's orientation is originally a base 3 number.
   public int getCornerOrientation(){
     int[] indexes = new int[]{0, 2, 6, 8};
-    String total = "";
+    byte[] base3 = new byte[7];
 
     // TODO: move this to its own function
     byte[][] corners = new byte[][]{
@@ -261,15 +261,24 @@ W = 5
       {cube[42], cube[45], cube[15]}
     };
 
-    int i = 0;
+    int current_index = 0;
+    byte i = 0;
     for (byte[] c : corners){
       i = 0;
       for (byte x : c){
-        if( x == 'R' || x == 'O') total = total.concat(Integer.toString(i));
+        if( x == 'R' || x == 'O') {
+          base3[current_index] = i;
+          current_index++;
+          break;
+        }
         i++;
       }
     }
-    return Integer.valueOf(total, 3);
+    int total = 0;
+    for (i = 0; i < base3.length; i++){
+      total += base3[6 - i] * Math.pow(3, i);
+    }
+    return total;
   }
 
 
