@@ -243,7 +243,7 @@ class GenerateTables {
               int node_edge1 = node.getEncodedEdges(1);
               int existing_edge0_value = getEdge0Value(node_edge0);
               int existing_edge1_value = getEdge1Value(node_edge1);
-              if (node_edge0 == 6232303 && node_edge1 == 31304530){
+              if (node_edge0 == 6228285 && node_edge1 == 29534692){
                 System.out.printf("edge0: %d, value: %d\nedge1: %d, value: %d\nlevel: %d\n",node_edge0, existing_edge0_value, node_edge1, existing_edge1_value,level);
                 node.printCube();
               }
@@ -304,7 +304,7 @@ class GenerateTables {
         insertEdge1Value(current_edge1, level);
       }
 
-      if (current_edge0 == 6232303 && current_edge1 == 31304530){
+      if (current_edge0 == 6228285 && current_edge1 == 29534692){
         System.out.printf("edge0: %d, value: %d\nedge1: %d, value: %d\nlevel: %d\n",current_edge0, getEdge0Value(current_edge0), current_edge1, getEdge1Value(current_edge1),level);
         current.printCube();
       }

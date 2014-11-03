@@ -364,7 +364,7 @@ W = 5
 
 
 
-  private int[] getEdgeOrientation(int half) {
+  private int[] getEdgeOrientation() {
     int[] edges_values = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
     int index = 0;
     int pos = 1;
@@ -407,12 +407,7 @@ W = 5
         index++;
       }
     }
-    if (half == 0){
-      return new int[]{edges_values[11], edges_values[0], edges_values[1], edges_values[4], edges_values[9], edges_values[5]};
-    }
-    else{
-      return new int[]{edges_values[6], edges_values[10], edges_values[7], edges_values[2], edges_values[3], edges_values[8]};
-    }
+    return new int[]{edges_values[11], edges_values[0], edges_values[1], edges_values[4], edges_values[9], edges_values[5], edges_values[6], edges_values[10], edges_values[7], edges_values[2], edges_values[3], edges_values[8]};
   }
 
 
@@ -447,7 +442,7 @@ W = 5
 
   public int getEncodedEdges(int half){
     int value = 0;
-    int[] edgeGroupOrientation = getEdgeOrientation(half); // half is either 0 or 1.
+    int[] edgeGroupOrientation = getEdgeOrientation(); // half is either 0 or 1.
     ArrayList<Integer> input_list = new ArrayList<Integer>(12);
     for(int x : this.getEdges()) {
       input_list.add(x);
@@ -456,7 +451,14 @@ W = 5
 
     int[] weights = new int[]{1774080, 80640, 4032, 224, 14, 1};
     int[] sequence = new int[6];
+    int[] orientations = new int[6];
     int index = 0;
+    for (int j = 11 - (6 * half); j > 5 - (6 * half); j--){
+      orientations[index] = edgeGroupOrientation[input_list.indexOf(j)];
+      index++;
+    }
+
+    index = 0;
     for (int j = 11 - (6 * half); j > 5 - (6 * half); j--){
       sequence[index] = input_list.indexOf(j);
       input_list.remove(input_list.indexOf(j));
@@ -467,7 +469,7 @@ W = 5
     //System.out.println(Arrays.toString(edgeGroupOrientation));
     for(int i = 0; i < 6; i++){
       //System.out.printf("Sequence: %d, Weight: %d, Orientation: %d. Total: %d\n", sequence[i], weights[i], edgeGroupOrientation[i], (sequence[i] * 2 + edgeGroupOrientation[i]) * weights[i]);
-      value += (sequence[i] * 2 + edgeGroupOrientation[i]) * weights[i];
+      value += (sequence[i] * 2 + orientations[i]) * weights[i];
     }
 
     return value;
