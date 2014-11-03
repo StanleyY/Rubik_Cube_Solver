@@ -13,7 +13,7 @@ class Solve {
   static byte[] edge0_values = new byte [21288960];
   static byte[] edge1_values = new byte [21288960];
   static Cube input_cube = new Cube();
-  static Cube goal_cube = new Cube(GenerateTables.GOAL_STATE);
+  static byte[] goal_cube = new Cube(GenerateTables.GOAL_STATE).cube;
 
 
   static void solveCube(){
@@ -63,9 +63,7 @@ class Solve {
 
 
   static boolean goalTest(Cube c){
-    for (int i = 0; i < 6; i++){
-      if (!Arrays.equals(c.cube, goal_cube.cube)) return false;
-    }
+    if (!Arrays.equals(c.cube, goal_cube)) return false;
     return true;
   }
 
