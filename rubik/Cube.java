@@ -364,7 +364,7 @@ W = 5
 
 
 
-  private int[] getEdgeOrientation() {
+  private int[] getEdgeOrientation(int half) {
     int[] edges_values = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
     int index = 0;
     int pos = 1;
@@ -407,8 +407,12 @@ W = 5
         index++;
       }
     }
-
-    return edges_values;
+    if (half == 0){
+      return new int[]{edges_values[11], edges_values[0], edges_values[1], edges_values[4], edges_values[9], edges_values[5]};
+    }
+    else{
+      return new int[]{edges_values[6], edges_values[10], edges_values[7], edges_values[2], edges_values[3], edges_values[8]};
+    }
   }
 
 
@@ -443,7 +447,7 @@ W = 5
 
   public int getEncodedEdges(int half){
     int value = 0;
-    int[] edgeGroupOrientation = Arrays.copyOfRange(getEdgeOrientation(), half * 6, half * 6 + 6); // half is either 0 or 1.
+    int[] edgeGroupOrientation = getEdgeOrientation(half); // half is either 0 or 1.
     ArrayList<Integer> input_list = new ArrayList<Integer>(12);
     for(int x : this.getEdges()) {
       input_list.add(x);
