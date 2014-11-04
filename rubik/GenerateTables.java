@@ -88,7 +88,7 @@ class GenerateTables {
 
 
   /**
-   * Generates every permutation of the corners and the number of moves used to reach this state.
+   * Generates every permutation of the corners and the minimum number of moves needed to solve it.
    * <p>
    * The values generated should be the lowest number of moves necessary to solve that particular
    * permutation of the corners. This search is done by doing a Depth-Limited Search to the defined
@@ -144,6 +144,13 @@ class GenerateTables {
   }
 
 
+  /**
+   * Generates every permutation of the corners and the minimum number of moves needed to solve it.
+   * <p>
+   * @deprecated
+   * An iterative deepening DFS attempt. I found that it took far to long to regenerate the tree after
+   * starting on the 8th level. Perhaps there isn't that much pruning being done by that low of a level.
+   */
   static void generateCornerValuesID(){
     Cube goal = new Cube(GOAL_STATE);
     goal.setLevel(0);
@@ -185,7 +192,15 @@ class GenerateTables {
     System.out.println("Corners Found: " + found);
   }
 
-
+  /**
+   * Generates every permutation of an edge group and the minimum number of moves needed to solve it.
+   * <p>
+   * Nodes are generated using a mix of iterative deepening DFS and DLS. I use IDDFS to generate the first
+   * 6 levels of cubes, meaning the requested edge groups that need 6 or less moves to solve. After that, when
+   * a level 7 cube is found, a depth limited search is performed on it up to a depth of 10.
+   *
+   * @param group   The edge to be generated, 0 or 1.
+   */
   static void generateEdgeValuesID(int group){
     Cube goal = new Cube(GOAL_STATE);
     goal.setLevel(0);
@@ -239,6 +254,16 @@ class GenerateTables {
     System.out.println("Edges Found: " + edgesFound);
   }
 
+  /**
+   * Performs a DLS on a given cube up to depth 10 and analyzes the requested edge group.
+   * <p>
+   * Although this method was written to as a supporting function to generateEdgeValuesID(),
+   * this method can actually be used as a standalone search as well. This can be done by providing
+   * a goal cube with the level set to 0. It will simply perform a DLS for the entire tree then.
+   *
+   * @param c       The initial seed cube with its level variable set.
+   * @param group   The edge to be generated, 0 or 1.
+   */
   static void edgeHelper(Cube c, int group){
     Stack<Cube> s = new Stack<Cube>();
     s.push(c);
@@ -269,9 +294,6 @@ class GenerateTables {
             }
           }
         }
-      }
-      else {
-        current.printCube();
       }
     }
   }
@@ -377,7 +399,7 @@ class GenerateTables {
         for(int face = 0; face < 6; face++){
           if (face != current.last_face){
             for(int i = 1; i < 4; i++){
-              Cube node = c.rotate(face, i);
+              Cube node = current.rotate(face, i);
               int node_edge0 = node.getEncodedEdges(0);
               int node_edge1 = node.getEncodedEdges(1);
               int node_corner = node.getEncodedCorners();
@@ -397,7 +419,17 @@ class GenerateTables {
     }
   }
 
-
+  /**
+   * Inserts a value into an index in the corners array.
+   * <p>
+   * See getCornerValue() for more information on how the pattern databases are
+   * formatted. This method inserts a value into the proper bits in the byte
+   * at the index without modifying the other bits.
+   *
+   * @param index   The hash value of this cube state's corners.
+   * @param level   The value to be inserted.
+   * @see           getCornerValues()
+   */
   static void insertCornerValue(int index, int level){
     byte current = corner_values[index / 2];
     if((index & 1) == 0){
@@ -408,7 +440,20 @@ class GenerateTables {
     }
   }
 
-
+  /**
+   * Returns the number of moves needed to solve a cube's corners.
+   * <p>
+   * The maximum moves needed to solve any cube's corners is a maximum of 11.
+   * This means every state can be mapped to four bits so an index in the byte
+   * array corner_values contains two states because a byte is 8 bits.
+   * <p>
+   * An even state hash is mapped to the first four bits while an odd hash is
+   * mapped to the last four bits. These values are extracted using bitwise
+   * operations.
+   *
+   * @param index   The hash value of this cube state's corners.
+   * @return        The moves needed to solve this state's corners.
+   */
   static int getCornerValue(int index){
     if((index & 1) == 0){
       return (( (corner_values[index / 2] & left) >> 4) & right);
@@ -418,7 +463,18 @@ class GenerateTables {
     }
   }
 
-
+  /**
+   * Inserts a value into an index in the specified edge group.
+   * <p>
+   * See getCornerValue() for more information on how the pattern databases are
+   * formatted. This method inserts a value into the proper bits in the byte
+   * at the index without modifying the other bits.
+   *
+   * @param index   The hash value of this cube state's specified group of edges.
+   * @param level   The value to be inserted.
+   * @param group   The requested edge group, 0 or 1.
+   * @see           getCornerValues()
+   */
   static void insertEdgeValue(int index, int level, int group){
     byte[] edge_values;
     if (group == 0) {
@@ -436,7 +492,17 @@ class GenerateTables {
     }
   }
 
-
+  /**
+   * Returns the number of moves needed to solve the requested group of edges.
+   * <p>
+   * The maximum moves needed to solve any cube's edges is a maximum of 10.
+   * See getCornerValue() for more information.
+   *
+   * @param index   The hash value of this cube state's first group of edges.
+   * @param group   The requested edge group, 0 or 1.
+   * @return        The moves needed to solve this group.
+   * @see           getCornerValue
+   */
   static int getEdgeValue(int index, int group){
     byte[] edge_values;
     if (group == 0) {
@@ -480,12 +546,8 @@ class GenerateTables {
     System.out.println("Starting writing process");
     try {
       initValues();
-      //generateEdgeValuesID(0);
-      //generateEdgeValuesID(1);
-      Cube c = new Cube(GOAL_STATE);
-      c.setLevel(0);
-      c.setFace(7);
-      edgeHelper(c, 1);
+      generateEdgeValuesID(0);
+      generateEdgeValuesID(1);
       //generateCornerValues();
       //generateAllValuesID();
       FileOutputStream output = new FileOutputStream("CornerValues");
