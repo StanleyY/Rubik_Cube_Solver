@@ -221,7 +221,15 @@ public class Cube {
     return output;
   }
 
-
+  /**
+   * A helper function for rotate(). Rotates the cubies related to the face that was turned.
+   * <p>
+   * rotate() only rotates the stickers on the face requested. This rotates the related stickers.
+   * Example: A rotation of the top face (0) requires the stickers on the back, left, front, right (5,1,2,3)
+   *          to be rotated as well.
+   *
+   * @param face  The face that was turned.
+   */
   private void rotateCubies(int face){
     int[] index_keys = null;
     switch (face) {
@@ -267,7 +275,12 @@ public class Cube {
     }
   }
 
-
+  /**
+   * A helper function for rotateCubies(). These are the indexes to be rotated corresponding to the switch
+   * statement in rotateCubies().
+   *
+   * @param face  The face that was turned.
+   */
   private int[][] initRotationIndex(int face){
     switch(face) {
       case 0: return new int[][]{new int[]{6,7,8},new int[]{2,1,0}, new int[]{2,1,0}, new int[]{2,1,0}};
@@ -280,6 +293,11 @@ public class Cube {
     }
   }
 
+  /**
+   * Returns the permutation of corners on this cube.
+   *
+   * @return An int[] containing the permutation of corners.
+   */
   private int[] getCorners() {
     byte[][] corners = new byte[][]{
       {cube[0], cube[9], cube[51]},
@@ -301,10 +319,15 @@ public class Cube {
     return output;
   }
 
-
+  /**
+   * A helper function to speed up getCorners(). Maps a given corner to a number.
+   * <p>
+   *    0      1      2      3      4      5      6      7
+   * ("GRW", "BRW", "GRY", "BRY", "GOY", "BOY", "GOW", "BOW")
+   *
+   * @return The integer value of a corner.
+   */
   private int getCornersHelper(byte[] b) {
-  //   0      1      2      3      4      5      6      7
-  //("GRW", "BRW", "GRY", "BRY", "GOY", "BOY", "GOW", "BOW")
     if (b[0] == 'B'){
       if (b[1] == 'R'){
         if(b[2] == 'W') return 1; //BRW
@@ -328,12 +351,19 @@ public class Cube {
   }
 
 
-  // The cube's orientation is originally a base 3 number.
+  /**
+   * Returns the orientation of the corners translated into an integer.
+   * <p>
+   * A corner's orientation can be 0, 1, or 2, depending on orientation.
+   * Therefore this can be seen as a 7 digit base 3 number which we then translate.
+   * This is primarily for getEncodedCorners().
+   *
+   * @return An int representing the orientation. Value ranges from [0, 2186].
+   */
   public int getCornerOrientation(){
     int[] indexes = new int[]{0, 2, 6, 8};
     byte[] base3 = new byte[7];
 
-    // TODO: move this to its own function
     byte[][] corners = new byte[][]{
       {cube[0], cube[9], cube[51]},
       {cube[2], cube[53], cube[29]},
@@ -365,7 +395,11 @@ public class Cube {
     return total;
   }
 
-
+  /**
+   * Returns the permutation of edges on this cube.
+   *
+   * @return An int[] containing the permutation of edges.
+   */
   private int[] getEdges(){
     byte[][] edges = new byte[][]{
       {cube[1], cube[52]}, {cube[3], cube[10]}, {cube[5], cube[28]}, {cube[7], cube[19]},
@@ -380,10 +414,15 @@ public class Cube {
     return output;
   }
 
-
+  /**
+   * A helper function to speed up getEdges(). Maps a given edge to a number.
+   * <p>
+   *   0     1     2     3     4      5     6     7    8     9     10    11
+   * ("RW", "GR", "BR", "RY", "GW", "GY", "BY", "BW", "OY", "GO", "BO", "OW");
+   *
+   * @return The integer value of an edge.
+   */
   private int getEdgesHelper(byte a, byte b){
-    //  0     1     2    3     4      5     6    7     8     9     10     11
-    //("RW", "GR", "BR", "RY", "GW", "GY", "BY", "BW", "OY", "GO", "BO", "OW");
     if (a > b){
       a = (byte)(a^b);
       b = (byte)(a^b);
@@ -425,7 +464,13 @@ public class Cube {
   }
 
 
-
+  /**
+   * Returns the orientations of the edge cubies as an int[].
+   * <p>
+   * An edge can be oriented correctly or incorrectly, 0 or 1.
+   *
+   * @return An int array with the edge cubies orientations.
+   */
   private int[] getEdgeOrientation() {
     int[] edges_values = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
     int index = 0;
@@ -472,7 +517,15 @@ public class Cube {
     return new int[]{edges_values[11], edges_values[0], edges_values[1], edges_values[4], edges_values[9], edges_values[5], edges_values[6], edges_values[10], edges_values[7], edges_values[2], edges_values[3], edges_values[8]};
   }
 
-
+  /**
+   * Helper function for getEdgeOrientation.
+   * <p>
+   * It is the index the sticker related to a sticker on a given face and index.
+   *
+   * @param face  The face that was checked.
+   * @param index The index that was checked.
+   * @return      The index of the sticker to be checked.
+   */
   public int sideFace(int face, int index){
     if (index == 3) return 1;
     if (index == 5) return 3;
@@ -480,7 +533,15 @@ public class Cube {
     else return (face == 2) ? 4 : 0;
   }
 
-
+  /**
+   * Hashing method that maps this cube's corners to an integer.
+   * <p>
+   * Generates the value by mapping the permutation to a unique number in the range [0, 40319].
+   * Then multiples it by the total number of values the corner orientations can be and adds the
+   * value of this cube's corner orientations.
+   *
+   * @return    The hashed value of this cube's corners.
+   */
   public int getEncodedCorners(){
     int value = 0;
     ArrayList<Integer> input_list = new ArrayList<Integer>(8);
@@ -501,7 +562,15 @@ public class Cube {
     return value * 2187 + getCornerOrientation();
   }
 
-
+  /**
+   * Hashing method that maps this cube's edges to an integer.
+   * <p>
+   * Generates the value by using the position and orientation of the first six or last six
+   * edge cubies and then apply a variable weight to each value.
+   *
+   * @param  half Integer value 0 or 1 for the first or second group.
+   * @return      The hashed value of this cube's edges.
+   */
   public int getEncodedEdges(int half){
     int value = 0;
     int[] edgeGroupOrientation = getEdgeOrientation(); // half is either 0 or 1.
