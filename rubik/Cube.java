@@ -2,7 +2,6 @@ package rubik;
 
 import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class Cube {
 /*
@@ -17,7 +16,6 @@ W = 5
   public byte[] cube;
   public int level;
   public int last_face;
-  public Map<Integer, int[]> rotation_indexes = null;
 
   public Cube(){
     this.cube = new byte[54];
