@@ -30,19 +30,23 @@ class Solve {
   static byte[] goal_cube = new Cube(GenerateTables.GOAL_STATE).cube;
 
   /**
+   * Handles starting the search and restarting it with an increased bound.
+   * <p>
    * This method is responsible for the iterative deepening portion of the
    * algorithm. It starts the first bound f value of the inputted cube. However
    * because the first actual step cost is 0, the f value is simply the heuristic
-   * value. The bound is incremented by 1 every time the search completes without
-   * finding a solution.
+   * value. We add one to this value because only cubes that are less than this
+   * bound will be considered and we know we will need at least the heuristic value's
+   * number of moves to reach a goal state.
    * <p>
+   * The bound is incremented by 1 every time the search completes without finding a solution.
    * Note: Proper IDA* search would set the new bound to the lowest f value over
    * the existing bound because this allows for at least 1 more node to be analyzed.
    * However in a Rubik's cube case, due to the step cost being 1, an increment of 
    * just 1 allow many more nodes to be considered.
    */
   static void solveCube(){
-    int threshold = h(input_cube);
+    int threshold = h(input_cube) + 1;
     while (true) {
       search(new CubeNode(input_cube, h(input_cube)), threshold, "");
       threshold++;
