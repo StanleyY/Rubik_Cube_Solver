@@ -5,7 +5,8 @@ import java.nio.file.*;
 import java.io.*;
 import java.util.*;
 
-/** Rubik's Cube solver using IDA* based on Korf's Algorithm.
+/**
+ * Rubik's Cube solver using IDA* based on Korf's Algorithm.
  *
  * @author     Stanley Yang
  * @version    1.0
@@ -78,7 +79,7 @@ class Solve {
    * If a child's f value is under the bound, then it will be added to the priority
    * queue based on its f value.
    *
-   * @param input   The Cube to be rotated
+   * @param input   The Cube to be rotated.
    * @param bound   The f value a cube needs to be below to be considered.
    * @return        A Priority Queue of all the valid children of the given Cube.
    */
@@ -103,11 +104,11 @@ class Solve {
   /**
    * Generates the heuristic value of the given Cube.
    * <p>
-   * Korf's algorithm says that the maximum of the number of moves needed to solve
-   * a cube's corners, 6 of its edges, and the remaining 6 edges is an admissible
+   * Korf's algorithm says that the highest of the value out of the moves needed to
+   * solve a cube's corners, 6 of its edges, and the remaining 6 edges is an admissible
    * heuristic.
    *
-   * @param c   The Cube to be rotated
+   * @param c   The Cube to be rotated.
    * @return    The heuristic value of the given Cube.
    */
   static int h(Cube c){
@@ -116,28 +117,51 @@ class Solve {
                              getEdge1Value(c.getEncodedEdges(1))));
   }
 
-
+  /**
+   * Checks if the given Cube is the goal state.
+   *
+   * @param c   The Cube to be checked.
+   * @return    True if it is the goal state, false otherwise.
+   */
   static boolean goalTest(Cube c){
     if (!Arrays.equals(c.cube, goal_cube)) return false;
     return true;
   }
 
-
-  static String translateMoves(String s){
+  /**
+   * Decodes the original move String from digits to the face letters and move numbers.
+   * <p>
+   * Even indexes on the input String are actually the faces encoded. The odd indexes contain
+   * the number of clockwise rotations of the face. It is far more efficent to do decoding once
+   * here on the final solution string instead of doing the same decoding during 
+   * generateNeighbors().
+   *
+   * @param input   The String to be decoded.
+   * @return        The String with the faces decoded.
+   */
+  static String translateMoves(String input){
     char[] letters = new char[] {'R','G','Y','B','O','W'};
-    char[] temp = s.toCharArray();
+    char[] temp = input.toCharArray();
     for (int i = 0; i < temp.length; i = i + 2){
       temp[i] = letters[Character.getNumericValue(temp[i])];
     }
     return new String(temp);
   }
 
-
-  static void printCubeInformation(Cube c){
-    System.out.printf("Corners: %d, Edge 1: %d , Edge 2, %d\n", getCornerValue(c.getEncodedCorners()), getEdge0Value(c.getEncodedEdges(0)), getEdge1Value(c.getEncodedEdges(1)));
-  }
-
-
+  /**
+   * Returns the number of moves needed to solve a cube's corners.
+   * <p>
+   * The maximum moves needed to solve any cube's corners is a maximum of 11.
+   * This means every state can be mapped to four bits so an index in the byte
+   * array corner_values contains two states because a byte is 8 bits.
+   * <p>
+   * An even state hash is mapped to the first four bits while an odd hash is
+   * mapped to the last four bits. These values are extracted using bitwise
+   * operations.
+   *
+   * @param index   The hash value of this cube state's corners.
+   * @return        The moves needed to solve this state's corners.
+   */
   static int getCornerValue(int index){
     if((index & 1) == 0){
       return (( (corner_values[index / 2] & left) >> 4) & right);
@@ -147,7 +171,16 @@ class Solve {
     }
   }
 
-
+  /**
+   * Returns the number of moves needed to solve the first group of edges.
+   * <p>
+   * The maximum moves needed to solve any cube's edges is a maximum of 10.
+   * See getCornerValue for more information.
+   *
+   * @param index   The hash value of this cube state's first group of edges.
+   * @return        The moves needed to solve this group.
+   * @see           getCornerValue
+   */
   static int getEdge0Value(int index){
     if((index & 1) == 0){
       return (( (edge0_values[index / 2] & left) >> 4) & right);
@@ -157,7 +190,16 @@ class Solve {
     }
   }
 
-
+  /**
+   * Returns the number of moves needed to solve the second group of edges.
+   * <p>
+   * The maximum moves needed to solve any cube's edges is a maximum of 10.
+   * See getCornerValue for more information.
+   *
+   * @param index   The hash value of this cube state's second group of edges.
+   * @return        The moves needed to solve this group.
+   * @see           getCornerValue
+   */
   static int getEdge1Value(int index){
     if((index & 1) == 0){
       return (( (edge1_values[index / 2] & left) >> 4) & right);
@@ -167,9 +209,10 @@ class Solve {
     }
   }
 
-
+  /**
+   * Reads in the pattern databases from the binary files on disk.
+   */
   static void read(){
-    System.out.println("Starting reading process");
     try {
       FileInputStream input = new FileInputStream("oldCornerValues");
       input.read(corner_values);
@@ -183,7 +226,7 @@ class Solve {
       input.read(edge1_values);
       input.close();
 
-      forceAdmission();
+      forceAdmissibility();
     } catch (java.io.IOException e) {
       e.printStackTrace();
       System.exit(1);
@@ -191,13 +234,15 @@ class Solve {
     System.out.println("Done loading files");
   }
 
-
+  /**
+   * Reads in the cube's state from a given file and generates a Cube object to input_cube.
+   */
   static void readInput(String filename){
     try{
       FileInputStream fs = new FileInputStream(filename);
       byte[] buffer = new byte[fs.available()];
       fs.read(buffer);
-      char[] temp = new String(buffer).replaceAll("\\s+", "").toCharArray(); //Remove whitespace
+      char[] temp = new String(buffer).replaceAll("\\s+", "").toCharArray(); //Remove any whitespace
       input_cube = new Cube(temp);
       input_cube.setFace(7);
       input_cube.setLevel(0);
@@ -207,15 +252,29 @@ class Solve {
     }
   }
 
-
-  static void forceAdmission(){
+  /**
+   * A failsafe check for my edge tables. Certain index values have not yet been
+   * initialized so they are defaulted to 15. This makes it an unadmissible heuristic.
+   * By setting those values to 0 instead, it becomes admissible, albeit a poor one.
+   */
+  static void forceAdmissibility(){
     for (int i = 0; i < edge0_values.length; i++){
       if(getEdge0Value(i) > 10) insertEdge0Value(i, 0);
       if(getEdge1Value(i) > 10) insertEdge1Value(i, 0);
     }
   }
 
-
+  /**
+   * Inserts a value into an index in the first edge group.
+   * <p>
+   * See getCornerValue() for more information on how the pattern databases are
+   * formatted. This method inserts a value into the proper bits in the byte
+   * at the index without modifying the other bits.
+   *
+   * @param index   The hash value of this cube state's first group of edges.
+   * @param level   The value to be inserted.
+   * @see           getCornerValues()
+   */
   static void insertEdge0Value(int index, int level){
     byte current = edge0_values[index / 2];
     if((index & 1) == 0){
@@ -226,7 +285,17 @@ class Solve {
     }
   }
 
-
+  /**
+   * Inserts a value into an index in the second edge group.
+   * <p>
+   * See getCornerValue() for more information on how the pattern databases are
+   * formatted. This method inserts a value into the proper bits in the byte
+   * at the index without modifying the other bits.
+   *
+   * @param index   The hash value of this cube state's second group of edges.
+   * @param level   The value to be inserted.
+   * @see           getCornerValues()
+   */
   static void insertEdge1Value(int index, int level){
     byte current = edge1_values[index / 2];
     if((index & 1) == 0){
@@ -268,6 +337,11 @@ class Solve {
         }
       }
     }
+  }
+
+
+  static void printCubeInformation(Cube c){
+    System.out.printf("Corners: %d, Edge 1: %d , Edge 2, %d\n", getCornerValue(c.getEncodedCorners()), getEdge0Value(c.getEncodedEdges(0)), getEdge1Value(c.getEncodedEdges(1)));
   }
 
 
