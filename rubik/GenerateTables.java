@@ -145,9 +145,8 @@ class GenerateTables {
       }
       if (getCornerValue(corner_index) > level) {
         insertCornerValue(corner_index, level);
-
-      if (found < Long.MAX_VALUE) found++;
-      if (found % 1000000 == 0) System.out.printf("Passed %d Corners\n", found);
+        if (found < Long.MAX_VALUE) found++;
+        if (found % 1000000 == 0) System.out.printf("Passed %d Corners\n", found);
 
         if (level < 11){ // Max moves is 11.
           for(int face = 0; face < 6; face++){
@@ -423,7 +422,7 @@ class GenerateTables {
     try {
       initValues();
       generateEdgeValuesID();
-      //generateCornerValues();
+      generateCornerValues();
       FileOutputStream output = new FileOutputStream("CornerValues");
       output.write(corner_values);
       output.close();
