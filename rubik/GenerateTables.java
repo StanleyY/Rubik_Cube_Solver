@@ -220,7 +220,6 @@ class GenerateTables {
               Cube node = current.rotate(face, i);
               int node_edge = node.getEncodedEdges(group);
               int existing_edge_value = getEdgeValue(node_edge, group);
-              if (node_edge == 31805264 && group == 1) node.printCube();
               if (level == limit){
                 if (limit == 7) {
                   node.setLevel(level);
@@ -270,7 +269,6 @@ class GenerateTables {
       Cube current = s.pop();
       int level = current.level;
       int current_edge = current.getEncodedEdges(group);
-      if (current_edge == 31805264 && group == 1) current.printCube();
       if (getEdgeValue(current_edge, group) > level){
         edgesFound++;
         if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
