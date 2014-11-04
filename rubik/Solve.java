@@ -113,8 +113,8 @@ class Solve {
    */
   static int h(Cube c){
     return Math.max(getCornerValue(c.getEncodedCorners()),
-                    Math.max(getEdge0Value(c.getEncodedEdges(0)),
-                             getEdge1Value(c.getEncodedEdges(1))));
+                    Math.max(getEdgeValue(c.getEncodedEdges(0), 0),
+                             getEdgeValue(c.getEncodedEdges(1), 1)));
   }
 
   /**
@@ -172,40 +172,29 @@ class Solve {
   }
 
   /**
-   * Returns the number of moves needed to solve the first group of edges.
+   * Returns the number of moves needed to solve the requested group of edges.
    * <p>
    * The maximum moves needed to solve any cube's edges is a maximum of 10.
-   * See getCornerValue for more information.
+   * See getCornerValue() for more information.
    *
    * @param index   The hash value of this cube state's first group of edges.
-   * @return        The moves needed to solve this group.
+   * @param group   The requested edge group, 0 or 1.
+   * @return        The moves needed to solve this group of edges.
    * @see           getCornerValue
    */
-  static int getEdge0Value(int index){
+  static int getEdgeValue(int index, int group){
+    byte[] edge_values;
+    if (group == 0) {
+      edge_values = edge0_values;
+    }
+    else {
+      edge_values = edge1_values;
+    }
     if((index & 1) == 0){
-      return (( (edge0_values[index / 2] & left) >> 4) & right);
+      return (( (edge_values[index / 2] & left) >> 4) & right);
     }
     else{
-      return (edge0_values[index / 2] & right);
-    }
-  }
-
-  /**
-   * Returns the number of moves needed to solve the second group of edges.
-   * <p>
-   * The maximum moves needed to solve any cube's edges is a maximum of 10.
-   * See getCornerValue for more information.
-   *
-   * @param index   The hash value of this cube state's second group of edges.
-   * @return        The moves needed to solve this group.
-   * @see           getCornerValue
-   */
-  static int getEdge1Value(int index){
-    if((index & 1) == 0){
-      return (( (edge1_values[index / 2] & left) >> 4) & right);
-    }
-    else{
-      return (edge1_values[index / 2] & right);
+      return (edge_values[index / 2] & right);
     }
   }
 
@@ -254,55 +243,43 @@ class Solve {
 
   /**
    * A failsafe check for my edge tables. Certain index values have not yet been
-   * initialized so they are defaulted to 15. This makes it an unadmissible heuristic.
+   * initialized so they were defaulted to 15. This is an unadmissible heuristic.
    * By setting those values to 0 instead, it becomes admissible, albeit a poor one.
+   * Hopefully this function will soon be unnecessary.
    */
   static void forceAdmissibility(){
     for (int i = 0; i < edge0_values.length * 2; i++){
-      if(getEdge0Value(i) > 10) insertEdge0Value(i, 0);
-      if(getEdge1Value(i) > 10) insertEdge1Value(i, 0);
+      if(getEdgeValue(i, 0) > 10) insertEdgeValue(i, 0, 0);
+      if(getEdgeValue(i, 1) > 10) insertEdgeValue(i, 0, 1);
     }
   }
 
   /**
-   * Inserts a value into an index in the first edge group.
+   * Inserts a value into an index in the specified edge group.
    * <p>
    * See getCornerValue() for more information on how the pattern databases are
    * formatted. This method inserts a value into the proper bits in the byte
    * at the index without modifying the other bits.
    *
-   * @param index   The hash value of this cube state's first group of edges.
+   * @param index   The hash value of this cube state's specified group of edges.
    * @param level   The value to be inserted.
+   * @param group   The requested edge group, 0 or 1.
    * @see           getCornerValues()
    */
-  static void insertEdge0Value(int index, int level){
-    byte current = edge0_values[index / 2];
+  static void insertEdgeValue(int index, int level, int group){
+    byte[] edge_values;
+    if (group == 0) {
+      edge_values = edge0_values;
+    }
+    else {
+      edge_values = edge1_values;
+    }
+    byte current = edge_values[index / 2];
     if((index & 1) == 0){
-      edge0_values[index / 2] = (byte)((level << 4) | (current & right) );
+      edge_values[index / 2] = (byte)((level << 4) | (current & right) );
     }
     else{
-      edge0_values[index / 2] = (byte)( (current & left) | level );
-    }
-  }
-
-  /**
-   * Inserts a value into an index in the second edge group.
-   * <p>
-   * See getCornerValue() for more information on how the pattern databases are
-   * formatted. This method inserts a value into the proper bits in the byte
-   * at the index without modifying the other bits.
-   *
-   * @param index   The hash value of this cube state's second group of edges.
-   * @param level   The value to be inserted.
-   * @see           getCornerValues()
-   */
-  static void insertEdge1Value(int index, int level){
-    byte current = edge1_values[index / 2];
-    if((index & 1) == 0){
-      edge1_values[index / 2] = (byte)((level << 4) | (current & right) );
-    }
-    else{
-      edge1_values[index / 2] = (byte)( (current & left) | level );
+      edge_values[index / 2] = (byte)( (current & left) | level );
     }
   }
 
@@ -319,7 +296,7 @@ class Solve {
     while (!s.empty()){
       Cube current = s.pop();
       level = current.level;
-      if(getEdge0Value(current.getEncodedEdges(0)) > level || getEdge1Value(current.getEncodedEdges(1)) > level || getCornerValue(current.getEncodedCorners()) > level){
+      if(getEdgeValue(current.getEncodedEdges(0), 0) > level || getEdgeValue(current.getEncodedEdges(1), 1) > level || getCornerValue(current.getEncodedCorners()) > level){
         System.out.println("Cube information, Level: " + current.level);
         printCubeInformation(current);
         current.printCube();
@@ -341,7 +318,7 @@ class Solve {
 
 
   static void printCubeInformation(Cube c){
-    System.out.printf("Corners: %d, Edge 1: %d , Edge 2, %d\n", getCornerValue(c.getEncodedCorners()), getEdge0Value(c.getEncodedEdges(0)), getEdge1Value(c.getEncodedEdges(1)));
+    System.out.printf("Corners: %d, Edge 0: %d , Edge 1, %d\n", getCornerValue(c.getEncodedCorners()), getEdgeValue(c.getEncodedEdges(0), 0), getEdgeValue(c.getEncodedEdges(1), 1));
   }
 
 
