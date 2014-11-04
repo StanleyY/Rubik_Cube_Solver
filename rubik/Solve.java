@@ -258,7 +258,7 @@ class Solve {
    * By setting those values to 0 instead, it becomes admissible, albeit a poor one.
    */
   static void forceAdmissibility(){
-    for (int i = 0; i < edge0_values.length; i++){
+    for (int i = 0; i < edge0_values.length * 2; i++){
       if(getEdge0Value(i) > 10) insertEdge0Value(i, 0);
       if(getEdge1Value(i) > 10) insertEdge1Value(i, 0);
     }
