@@ -5,8 +5,21 @@ import java.nio.file.*;
 import java.io.*;
 import java.util.*;
 
+/** Rubik's Cube solver using IDA* based on Korf's Algorithm.
+ *
+ * @author     Stanley Yang
+ * @version    1.0
+ * @since      2014-11-04
+ */
 class Solve {
-
+  /**
+   * Useful Global Variables.
+   * left and right are for bitwise operations for getting and inserting values
+   * into the pattern databases.
+   * corner_values, edge0_values, edge1_values are the pattern databases.
+   * input_cube will be where the original inputted cube will be stored.
+   * goal_cube is the byte representation of the goal state.
+   */
   static byte left = (byte)0xF0;
   static byte right = (byte)0x0F;
   static byte[] corner_values = new byte [44089920];
@@ -15,7 +28,18 @@ class Solve {
   static Cube input_cube = new Cube();
   static byte[] goal_cube = new Cube(GenerateTables.GOAL_STATE).cube;
 
-
+  /**
+   * This method is responsible for the iterative deepening portion of the
+   * algorithm. It starts the first bound f value of the inputted cube. However
+   * because the first actual step cost is 0, the f value is simply the heuristic
+   * value. The bound is incremented by 1 every time the search completes without
+   * finding a solution.
+   * <p>
+   * Note: Proper IDA* search would set the new bound to the lowest f value over
+   * the existing bound because this allows for at least 1 more node to be analyzed.
+   * However in a Rubik's cube case, due to the step cost being 1, an increment of 
+   * just 1 allow many more nodes to be considered.
+   */
   static void solveCube(){
     int threshold = h(input_cube);
     while (true) {
@@ -25,28 +49,50 @@ class Solve {
     }
   }
 
-
-  static void search(CubeNode cn, int bound, String s){
-    if (goalTest(cn.cube)) {System.out.println("FOUND IT: " + translateMoves(s) + " Length: " + s.length() / 2); System.out.println(new java.util.Date()); System.exit(0);}
-    PriorityQueue<CubeNode> neighbors = generateNeighbors(cn.cube, bound);
-    while (neighbors.size() > 0){
-      CubeNode n = neighbors.poll();
-    search(n, bound, s.concat(n.move));
+  /**
+   * A recursive A* algorithm implementation.
+   * <p>
+   * If the goal state is found, this method will print out the moves used and ends 
+   * the program. Otherwise it will expand the current node for every child that is 
+   * under the current bound.
+   *
+   * @param cn      A node containing a cube and its heuristic value.
+   * @param bound   The f value a cube needs to be below to be considered.
+   * @param moves   The moves used to reach this node.
+   */
+  static void search(CubeNode cn, int bound, String moves){
+    if (goalTest(cn.cube)) {System.out.println("FOUND IT: " + translateMoves(moves) + " Length: " + moves.length() / 2); System.out.println(new java.util.Date()); System.exit(0);}
+    PriorityQueue<CubeNode> children = generateChildren(cn.cube, bound);
+    while (children.size() > 0){
+      CubeNode n = children.poll();
+      search(n, bound, moves.concat(n.move));
     }
   }
 
-
-  static PriorityQueue<CubeNode> generateNeighbors(Cube c, int bound){
+  /**
+   * Generates all the children of a given Cube that are under a given bound.
+   * <p>
+   * Rotates every face to generate three children per face. It will not rotate face
+   * that was previously rotated to get the input Cube because it will generate a
+   * Cube that was previously generated with the input Cube, an uncle so to speak.
+   * If a child's f value is under the bound, then it will be added to the priority
+   * queue based on its f value.
+   *
+   * @param input   The Cube to be rotated
+   * @param bound   The f value a cube needs to be below to be considered.
+   * @return        A Priority Queue of all the valid children of the given Cube.
+   */
+  static PriorityQueue<CubeNode> generateChildren(Cube input, int bound){
     PriorityQueue<CubeNode> queue = new PriorityQueue<CubeNode>(18, new CubeNodeComparator());
     for(int face = 0; face < 6; face++){
-      if (face != c.last_face){
+      if (face != input.last_face){
         for(int move = 1; move < 4; move++){
-          Cube node = c.rotate(face, move);
+          Cube node = input.rotate(face, move);
           int h_val = h(node);
-          if (c.level + 1 + h_val < bound){
-            node.setLevel(c.level + 1);
+          if (input.level + 1 + h_val < bound){
+            node.setLevel(input.level + 1);
             node.setFace(face);
-            queue.offer(new CubeNode(node, c.level + 1 + h(node), Integer.toString(face).concat(Integer.toString(move))));
+            queue.offer(new CubeNode(node, input.level + 1 + h(node), Integer.toString(face).concat(Integer.toString(move))));
           }
         }
       }
@@ -54,7 +100,16 @@ class Solve {
     return queue;
   }
 
-
+  /**
+   * Generates the heuristic value of the given Cube.
+   * <p>
+   * Korf's algorithm says that the maximum of the number of moves needed to solve
+   * a cube's corners, 6 of its edges, and the remaining 6 edges is an admissible
+   * heuristic.
+   *
+   * @param c   The Cube to be rotated
+   * @return    The heuristic value of the given Cube.
+   */
   static int h(Cube c){
     return Math.max(getCornerValue(c.getEncodedCorners()),
                     Math.max(getEdge0Value(c.getEncodedEdges(0)),
