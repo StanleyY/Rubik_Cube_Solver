@@ -399,10 +399,11 @@ class GenerateTables {
         }
       }
       limit++;
-      System.out.println("Current Edge Limit: " + limit);
+      System.out.println("Current Limit: " + limit);
       s.push(goal);
     }
     System.out.println("Edges Found: " + edgesFound);
+    System.out.println("Corners Found: " + cornersFound);
   }
 
 
