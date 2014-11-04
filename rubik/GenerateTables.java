@@ -218,20 +218,20 @@ class GenerateTables {
         edgesFound++;
         if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
         insertEdgeValue(current_edge, level, group);
-      }
 
-      if (level < 10){
-        for(int face = 0; face < 6; face++){
-          if (face != current.last_face){
-            for(int i = 1; i < 4; i++){
-              Cube node = c.rotate(face, i);
-              int node_edge = node.getEncodedEdges(group);
-              int existing_edge_value = getEdgeValue(node_edge, group);
+        if (level < 10){
+          for(int face = 0; face < 6; face++){
+            if (face != current.last_face){
+              for(int i = 1; i < 4; i++){
+                Cube node = c.rotate(face, i);
+                int node_edge = node.getEncodedEdges(group);
+                int existing_edge_value = getEdgeValue(node_edge, group);
 
-              if (existing_edge_value > level + 1){
-                node.setLevel(level + 1);
-                node.setFace(face);
-                s.push(node);
+                if (existing_edge_value > level + 1){
+                  node.setLevel(level + 1);
+                  node.setFace(face);
+                  s.push(node);
+                }
               }
             }
           }
@@ -476,7 +476,7 @@ class GenerateTables {
     System.out.println("Corner: " + c.getEncodedCorners());
     System.out.println("Edge0: " + c.getEncodedEdges(0));
     System.out.println("Edge1: " + c.getEncodedEdges(1));
-    System.out.printf("Corners: %d, Edge 1: %d , Edge 2, %d\n", getCornerValue(c.getEncodedCorners()), getEdgeValue(c.getEncodedEdges(0), 0), getEdgeValue(c.getEncodedEdges(1), 1));
+    System.out.printf("Corners: %d, Edge 0: %d , Edge 1, %d\n", getCornerValue(c.getEncodedCorners()), getEdgeValue(c.getEncodedEdges(0), 0), getEdgeValue(c.getEncodedEdges(1), 1));
     //errorCheck();
 
     System.out.printf("Start Time: %s\nEnd Time: %s\n", start, new java.util.Date());
