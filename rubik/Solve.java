@@ -1,9 +1,9 @@
 package rubik;
 
-import java.util.Arrays;
-import java.nio.file.*;
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.PriorityQueue;
+import java.util.Stack;
 
 /**
  * Rubik's Cube solver using IDA* based on Korf's Algorithm.
