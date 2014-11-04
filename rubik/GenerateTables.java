@@ -29,8 +29,8 @@ class GenerateTables {
       }
     }
     for(int i = 0; i < edge0_values.length * 2; i++){
-      int val1 = getEdge0Value(i);
-      int val2 = getEdge1Value(i);
+      int val1 = getEdgeValue(i, 0);
+      int val2 = getEdgeValue(i, 1);
       if(val1 > 10){
         if(val1 > 11){
           edge0_u++;
@@ -56,8 +56,8 @@ class GenerateTables {
       insertCornerValue(i, 15);
     }
     for (int i = 0; i < edge0_values.length * 2; i++){
-      insertEdge0Value(i, 15);
-      insertEdge1Value(i, 15);
+      insertEdgeValue(i, 15, 0);
+      insertEdgeValue(i, 15, 1);
     }
   }
 
@@ -152,12 +152,12 @@ class GenerateTables {
   }
 
 
-  static void generateEdgeValuesID(){
+  static void generateEdgeValuesID(int group){
     Cube goal = new Cube(GOAL_STATE);
     goal.setLevel(0);
     goal.setFace(7);
-    insertEdge0Value(goal.getEncodedEdges(0), 0);
-    insertEdge1Value(goal.getEncodedEdges(1), 0);
+    insertEdgeValue(goal.getEncodedEdges(0), 0, 0);
+    insertEdgeValue(goal.getEncodedEdges(1), 0, 1);
     Stack<Cube> s = new Stack<Cube>();
     s.push(goal);
     int limit = 1;
@@ -170,31 +170,25 @@ class GenerateTables {
           if (face != current.last_face){
             for(int i = 1; i < 4; i++){
               Cube node = current.rotate(face, i);
-              int node_edge0 = node.getEncodedEdges(0);
-              int node_edge1 = node.getEncodedEdges(1);
-              int existing_edge0_value = getEdge0Value(node_edge0);
-              int existing_edge1_value = getEdge1Value(node_edge1);
+              int node_edge = node.getEncodedEdges(group);
+              int existing_edge_value = getEdgeValue(node_edge, group);
+              if (node_edge == 31805264 && group == 1) node.printCube();
               if (level == limit){
                 if (limit == 7) {
                   node.setLevel(level);
                   node.setFace(face);
-                  edgeHelper(node);
+                  edgeHelper(node, group);
                 }
                 else {
-                  if (existing_edge0_value > level){
+                  if (existing_edge_value > level){
                     edgesFound++;
                     if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
-                    insertEdge0Value(node_edge0, level);
-                  }
-                  if (existing_edge1_value > level){
-                    edgesFound++;
-                    if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
-                    insertEdge1Value(node_edge1, level);
+                    insertEdgeValue(node_edge, level, group);
                   }
                 }
               }
               else {
-                if (existing_edge0_value == level || existing_edge1_value == level){
+                if (existing_edge_value == level){
                   node.setLevel(level);
                   node.setFace(face);
                   s.push(node);
@@ -211,24 +205,19 @@ class GenerateTables {
     System.out.println("Edges Found: " + edgesFound);
   }
 
-  static void edgeHelper(Cube c){
+  static void edgeHelper(Cube c, int group){
     Stack<Cube> s = new Stack<Cube>();
     s.push(c);
     while (!s.empty()){
       Cube current = s.pop();
       int level = current.level;
-      int current_edge0 = current.getEncodedEdges(0);
-      int current_edge1 = current.getEncodedEdges(1);
+      int current_edge = current.getEncodedEdges(group);
+      if (current_edge == 31805264 && group == 1) current.printCube();
 
-      if (getEdge0Value(current_edge0) > level){
+      if (getEdgeValue(current_edge, group) > level){
         edgesFound++;
         if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
-        insertEdge0Value(current_edge0, level);
-      }
-      if (getEdge1Value(current_edge1) > level){
-        edgesFound++;
-        if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
-        insertEdge1Value(current_edge1, level);
+        insertEdgeValue(current_edge, level, group);
       }
 
       if (level < 10){
@@ -236,12 +225,10 @@ class GenerateTables {
           if (face != current.last_face){
             for(int i = 1; i < 4; i++){
               Cube node = c.rotate(face, i);
-              int node_edge0 = node.getEncodedEdges(0);
-              int node_edge1 = node.getEncodedEdges(1);
-              int existing_edge0_value = getEdge0Value(node_edge0);
-              int existing_edge1_value = getEdge1Value(node_edge1);
+              int node_edge = node.getEncodedEdges(group);
+              int existing_edge_value = getEdgeValue(node_edge, group);
 
-              if (existing_edge0_value > level + 1 || existing_edge1_value > level + 1){
+              if (existing_edge_value > level + 1){
                 node.setLevel(level + 1);
                 node.setFace(face);
                 s.push(node);
@@ -259,8 +246,8 @@ class GenerateTables {
     goal.setLevel(0);
     goal.setFace(7);
     insertCornerValue(goal.getEncodedCorners(), 0);
-    insertEdge0Value(goal.getEncodedEdges(0), 0);
-    insertEdge1Value(goal.getEncodedEdges(1), 0);
+    insertEdgeValue(goal.getEncodedEdges(0), 0, 0);
+    insertEdgeValue(goal.getEncodedEdges(1), 0, 1);
     Stack<Cube> s = new Stack<Cube>();
     s.push(goal);
     int limit = 1;
@@ -276,8 +263,8 @@ class GenerateTables {
               int node_edge0 = node.getEncodedEdges(0);
               int node_edge1 = node.getEncodedEdges(1);
               int node_corner = node.getEncodedCorners();
-              int existing_edge0_value = getEdge0Value(node_edge0);
-              int existing_edge1_value = getEdge1Value(node_edge1);
+              int existing_edge0_value = getEdgeValue(node_edge0, 0);
+              int existing_edge1_value = getEdgeValue(node_edge1, 1);
               int existing_corner_value = getCornerValue(node_corner);
 
               if (level == limit){
@@ -290,12 +277,12 @@ class GenerateTables {
                   if (existing_edge0_value > level){
                     edgesFound++;
                     if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
-                    insertEdge0Value(node_edge0, level);
+                    insertEdgeValue(node_edge0, level, 0);
                   }
                   if (existing_edge1_value > level){
                     edgesFound++;
                     if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
-                    insertEdge1Value(node_edge1, level);
+                    insertEdgeValue(node_edge1, level, 1);
                   }
                   if (existing_corner_value > level){
                     cornersFound++;
@@ -334,15 +321,15 @@ class GenerateTables {
       int current_edge0 = current.getEncodedEdges(0);
       int current_edge1 = current.getEncodedEdges(1);
 
-      if (getEdge0Value(current_edge0) > level){
+      if (getEdgeValue(current_edge0, 0) > level){
         edgesFound++;
         if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
-        insertEdge0Value(current_edge0, level);
+        insertEdgeValue(current_edge0, level, 0);
       }
-      if (getEdge1Value(current_edge1) > level){
+      if (getEdgeValue(current_edge1, 1) > level){
         edgesFound++;
         if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
-        insertEdge1Value(current_edge1, level);
+        insertEdgeValue(current_edge1, level, 1);
       }
       if (getCornerValue(current_corner) > level){
         cornersFound++;
@@ -358,8 +345,8 @@ class GenerateTables {
               int node_edge0 = node.getEncodedEdges(0);
               int node_edge1 = node.getEncodedEdges(1);
               int node_corner = node.getEncodedCorners();
-              int existing_edge0_value = getEdge0Value(node_edge0);
-              int existing_edge1_value = getEdge1Value(node_edge1);
+              int existing_edge0_value = getEdgeValue(node_edge0, 0);
+              int existing_edge1_value = getEdgeValue(node_edge1, 1);
               int existing_corner_value = getCornerValue(node_corner);
 
               if (existing_edge0_value > level + 1 || existing_edge1_value > level + 1 || existing_corner_value > level + 1){
@@ -375,7 +362,6 @@ class GenerateTables {
   }
 
 
-  // 
   static void insertCornerValue(int index, int level){
     byte current = corner_values[index / 2];
     if((index & 1) == 0){
@@ -397,44 +383,37 @@ class GenerateTables {
   }
 
 
-  static void insertEdge0Value(int index, int level){
-    byte current = edge0_values[index / 2];
+  static void insertEdgeValue(int index, int level, int group){
+    byte[] edge_values;
+    if (group == 0) {
+      edge_values = edge0_values;
+    }
+    else {
+      edge_values = edge1_values;
+    }
+    byte current = edge_values[index / 2];
     if((index & 1) == 0){
-      edge0_values[index / 2] = (byte)((level << 4) | (current & right) );
+      edge_values[index / 2] = (byte)((level << 4) | (current & right) );
     }
     else{
-      edge0_values[index / 2] = (byte)( (current & left) | level );
+      edge_values[index / 2] = (byte)( (current & left) | level );
     }
   }
 
 
-  static int getEdge0Value(int index){
+  static int getEdgeValue(int index, int group){
+    byte[] edge_values;
+    if (group == 0) {
+      edge_values = edge0_values;
+    }
+    else {
+      edge_values = edge1_values;
+    }
     if((index & 1) == 0){
-      return (( (edge0_values[index / 2] & left) >> 4) & right);
+      return (( (edge_values[index / 2] & left) >> 4) & right);
     }
     else{
-      return (edge0_values[index / 2] & right);
-    }
-  }
-
-
-  static void insertEdge1Value(int index, int level){
-    byte current = edge1_values[index / 2];
-    if((index & 1) == 0){
-      edge1_values[index / 2] = (byte)((level << 4) | (current & right) );
-    }
-    else{
-      edge1_values[index / 2] = (byte)( (current & left) | level );
-    }
-  }
-
-
-  static int getEdge1Value(int index){
-    if((index & 1) == 0){
-      return (( (edge1_values[index / 2] & left) >> 4) & right);
-    }
-    else{
-      return (edge1_values[index / 2] & right);
+      return (edge_values[index / 2] & right);
     }
   }
 
@@ -465,9 +444,10 @@ class GenerateTables {
     System.out.println("Starting writing process");
     try {
       initValues();
-      //generateEdgeValuesID();
+      //generateEdgeValuesID(0);
+      generateEdgeValuesID(1);
       //generateCornerValues();
-      generateAllValuesID();
+      //generateAllValuesID();
       FileOutputStream output = new FileOutputStream("CornerValues");
       output.write(corner_values);
       output.close();
@@ -496,7 +476,7 @@ class GenerateTables {
     System.out.println("Corner: " + c.getEncodedCorners());
     System.out.println("Edge0: " + c.getEncodedEdges(0));
     System.out.println("Edge1: " + c.getEncodedEdges(1));
-    System.out.printf("Corners: %d, Edge 1: %d , Edge 2, %d\n", getCornerValue(c.getEncodedCorners()), getEdge0Value(c.getEncodedEdges(0)), getEdge1Value(c.getEncodedEdges(1)));
+    System.out.printf("Corners: %d, Edge 1: %d , Edge 2, %d\n", getCornerValue(c.getEncodedCorners()), getEdgeValue(c.getEncodedEdges(0), 0), getEdgeValue(c.getEncodedEdges(1), 1));
     //errorCheck();
 
     System.out.printf("Start Time: %s\nEnd Time: %s\n", start, new java.util.Date());
