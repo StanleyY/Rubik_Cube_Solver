@@ -382,7 +382,7 @@ class GenerateTables {
                   }
                   if (existing_corner_value > level){
                     cornersFound++;
-                    if(cornersFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", cornersFound);
+                    if(cornersFound % 1000000 == 0) System.out.printf("Passed %d corners found.\n", cornersFound);
                     insertCornerValue(node_corner, level);
                   }
                 }
@@ -429,7 +429,7 @@ class GenerateTables {
       }
       if (getCornerValue(current_corner) > level){
         cornersFound++;
-        if(cornersFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", cornersFound);
+        if(cornersFound % 1000000 == 0) System.out.printf("Passed %d corners found.\n", cornersFound);
         insertCornerValue(current_corner, level);
       }
 
