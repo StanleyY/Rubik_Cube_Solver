@@ -284,44 +284,6 @@ class Solve {
   }
 
 
-  // Generate every cube up to 11 moves and sees if there are any unadmissable heuristics.
-  static void randomCubeTest(){
-    Stack<Cube> s = new Stack<Cube>();
-    Cube goal = new Cube(GenerateTables.GOAL_STATE);
-    goal.setLevel(0);
-    goal.setFace(7);
-    s.push(goal);
-    int level = 0;
-    int limit = 5;
-    while (!s.empty()){
-      Cube current = s.pop();
-      level = current.level;
-      if(getEdgeValue(current.getEncodedEdges(0), 0) > level || getEdgeValue(current.getEncodedEdges(1), 1) > level || getCornerValue(current.getEncodedCorners()) > level){
-        System.out.println("Cube information, Level: " + current.level);
-        printCubeInformation(current);
-        current.printCube();
-      }
-      if (level < 11){
-        for(int face = 0; face < 6; face++){
-          if (face != current.last_face){
-            for(int i = 1; i < 4; i++){
-              Cube node = current.rotate(face, i);
-              node.setLevel(level + 1);
-              node.setFace(face);
-              s.push(node);
-            }
-          }
-        }
-      }
-    }
-  }
-
-
-  static void printCubeInformation(Cube c){
-    System.out.printf("Corners: %d, Edge 0: %d , Edge 1, %d\n", getCornerValue(c.getEncodedCorners()), getEdgeValue(c.getEncodedEdges(0), 0), getEdgeValue(c.getEncodedEdges(1), 1));
-  }
-
-
   public static void main(String[] args){
     if (args.length < 1) {
       System.out.println("Please Input Filename.");
@@ -332,7 +294,6 @@ class Solve {
     read();
     readInput(args[0]);
     solveCube();
-    //randomCubeTest();
   }
 
 }
