@@ -3,62 +3,116 @@ package rubik;
 import java.util.Arrays;
 import java.util.ArrayList;
 
+/**
+ * Representation of a Rubik's Cube.
+ *
+ * @author     Stanley Yang
+ * @version    1.0
+ * @since      2014-11-04
+ */
 public class Cube {
-/*
-R = 0
-G = 1
-Y = 2
-B = 3
-O = 4
-W = 5
-*/
-
+  /**
+   * Cube's public variables.
+   * cube is a byte[54] that represents all 54 faces on the cube.
+   * The faces in order are R, G, Y, B, O, W or 0, 1, 2, 3, 4, 5.
+   * The face multiplied by 9 will be the first index of that face.
+   * Ex: Front face = 2 * 9 and the next 8 indexes are the front face, 18 - 26.
+   * <p>
+   * level is an optional variable that assigns a number to this cube. This is
+   * typically used to say how many moves were used to generate this cube.
+   * <p>
+   * last_face is an optional variable that indicates what face was turned to
+   * get to this cube. This is used to help decreases the number of rotations
+   * done on this cube by 3 because there is no need to rotate the same face.
+   */
   public byte[] cube;
   public int level;
   public int last_face;
 
+  /**
+   * Basic constructor for Cube.
+   */
   public Cube(){
     this.cube = new byte[54];
   }
 
-
-  public Cube(char[] input){
-    this.cube = this.generateCube(input);
-  }
-
-
-  public Cube(char[] input, int level){
-    this.cube = this.generateCube(input);
-    this.level = level;
-  }
-
-
+  /**
+   * Generates a Cube from a String. Essentially the same as Cube(char[]).
+   * The String should not be formatted properly yet.
+   *
+   * @param s   String of length 54 containing the cube.
+   */
   public Cube(String s){
     char[] input = s.toCharArray();
     this.cube = this.generateCube(input);
   }
 
+  /**
+   * Generates a Cube from a char array.
+   * The char array should not be formatted properly yet.
+   *
+   * @param input  A char[54] containing the cube.
+   */
+  public Cube(char[] input){
+    this.cube = this.generateCube(input);
+  }
 
+  /**
+   * Generates a Cube from a char array and initializes it with a level.
+   * The char array should not be formatted properly yet.
+   *
+   * @param input  A char[54] containing the cube.
+   * @param level  An integer, generally the number of moves used to get to this cube.
+   */
+  public Cube(char[] input, int level){
+    this.cube = this.generateCube(input);
+    this.level = level;
+  }
+
+  /**
+   * Generates a Cube from a byte array. This is generally used to clone a Cube.
+   *
+   * @param input  A byte[54] containing the cube.
+   */
   public Cube(byte[] input){
     this.cube = this.generateCube(input);
   }
 
-
+  /**
+   * Generates a Cube from a byte array and initializes it with a level.
+   *
+   * @param input  A byte[54] containing the cube.
+   * @param level  An integer, generally the number of moves used to get to this cube.
+   */
   public Cube(byte[] input, int level){
     this.cube = this.generateCube(input);
     this.level = level;
   }
 
-
+  /**
+   * Sets the level variable in the Cube.
+   *
+   * @param level  An integer, generally the number of moves used to get to this cube.
+   */
   public void setLevel(int level){
     this.level = level;
   }
 
+  /**
+   * Sets the last_face variable in the Cube.
+   *
+   * @param last_face  An integer ranging [0,5], should be the face rotated to generate this cube.
+   */
   public void setFace(int face){
     this.last_face = face;
   }
 
-
+  /**
+   * Properly formats the cube from a String or char[] input.
+   *
+   * @param input  Expected to be formatted as from a text file.
+   * @return       A properly formatted cube.
+   */
   private byte[] generateCube(char[] input){
     byte[] output = new byte[54];
 
@@ -95,7 +149,12 @@ W = 5
     return output;
   }
 
-  // Deep cloning the input.
+  /**
+   * Deep clones the input byte array and returns it.
+   *
+   * @param input  A byte[54], should be a valid cube state.
+   * @return       A deep cloned copy of input.
+   */
   private byte[] generateCube(byte[] input){
     byte[] temp = new byte[54];
     for (int i = 0; i < 54; i++){
@@ -104,9 +163,10 @@ W = 5
     return temp;
   }
 
-
+  /**
+   * Prints the cube in a more human readable format.
+   */
   public void printCube() {
-  // Prints the cube in a more human readable format.
   int i = 0;
   while (i < 9){
     if(i % 3 == 0) System.out.printf("\n   ");
@@ -131,7 +191,13 @@ W = 5
   System.out.printf("\n\n");
 }
 
-  // Rotates a face clockwise a given number of turns
+  /**
+   * Rotates a face clockwise a given number of turns
+   *
+   * @param face  The face to be turned.
+   * @param turns The amount of clockwise turns. Should be between 1 - 3.
+   * @return      A new Cube object with the rotation done.
+   */
   public Cube rotate(int face, int turns){
     if (turns < 1 || turns > 3) {throw new IllegalArgumentException("Turns need to be between 1 and 3.");}
     if (face < 0 || face > 5) {throw new IllegalArgumentException("Invalid face, must be between 0 and 5.");}
