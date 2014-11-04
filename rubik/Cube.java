@@ -453,24 +453,24 @@ W = 5
     int[] sequence = new int[6];
     int[] orientations = new int[6];
     int index = 0;
-    for (int j = 11 - (6 * half); j > 5 - (6 * half); j--){
+    for (int j = 0 + (6 * half); j < 6 + (6 * half); j++){
       orientations[index] = edgeGroupOrientation[input_list.indexOf(j)];
       index++;
     }
 
     index = 0;
-    for (int j = 11 - (6 * half); j > 5 - (6 * half); j--){
+    for (int j = 0 + (6 * half); j < 6 + (6 * half); j++){
       sequence[index] = input_list.indexOf(j);
       input_list.remove(input_list.indexOf(j));
       index++;
     }
 
-    //System.out.println(Arrays.toString(sequence));
-    //System.out.println(Arrays.toString(edgeGroupOrientation));
-    for(int i = 0; i < 6; i++){
-      //System.out.printf("Sequence: %d, Weight: %d, Orientation: %d. Total: %d\n", sequence[i], weights[i], edgeGroupOrientation[i], (sequence[i] * 2 + edgeGroupOrientation[i]) * weights[i]);
-      value += (sequence[i] * 2 + orientations[i]) * weights[i];
-    }
+    value += (sequence[0] + orientations[0] * 12) * weights[0];
+    value += (sequence[1] + orientations[1] * 11) * weights[1];
+    value += (sequence[2] + orientations[2] * 10) * weights[2];
+    value += (sequence[3] + orientations[3] * 9) * weights[3];
+    value += (sequence[4] + orientations[4] * 8) * weights[4];
+    value += (sequence[5] + orientations[5] * 7) * weights[5];
 
     return value;
   }
