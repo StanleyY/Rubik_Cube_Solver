@@ -74,7 +74,7 @@ class GenerateTables {
   /**
    * Initializes the pattern databases to 15 in every index. This is effectively
    * infinity because the maximum moves needed to solve the corners on a cube is 11
-   * and the maximum moves for solving the edges is 10.
+   * and the maximum moves needed for solving a group of 6 edges is 10.
    */
   static void initValues(){
     for (int i = 0; i < corner_values.length * 2; i++){
@@ -92,7 +92,7 @@ class GenerateTables {
    * The values generated should be the lowest number of moves necessary to solve that particular
    * permutation of the corners. This search is done by doing a Depth-Limited Search to the defined
    * limit and storing those nodes at the limit, similar to a fringe in Breadth-First Search. Once
-   * all the nodes above the limit are exhausted. It does a Depth-Limited Search up to 11 moves of
+   * all the nodes below the limit are exhausted, a Depth-Limited Search up to 11 moves of is done on
    * the nodes in this fringe.
    */
   static void generateCornerValues(){
@@ -257,7 +257,7 @@ class GenerateTables {
    * <p>
    * Although this method was written to as a supporting function to generateEdgeValuesID(),
    * this method can actually be used as a standalone search as well. This can be done by providing
-   * a goal cube with the level set to 0. It will simply perform a DLS for the entire tree then.
+   * a goal cube with the level set to 0. It will simply perform a DLS for the entire tree.
    *
    * @param c       The initial seed cube with its level variable set.
    * @param group   The edge to be generated, 0 or 1.
@@ -300,7 +300,7 @@ class GenerateTables {
    * <p>
    * @deprecated
    * The process is very similar to generateEdgeValues() except it considers corners as well.
-   * This was an experiment to see if weaker pruning would be faster than having to traverse
+   * This was an experiment to see if weaker pruning would be wroth not than having to traverse
    * the edge tree twice and the corner tree once. In my experience, not really. It was faster
    * to run generateEdgeValues() twice and generateCornerValues() once. So this is no longer used.
    */
@@ -486,8 +486,8 @@ class GenerateTables {
    * Inserts a value into an index in the corners array.
    * <p>
    * See getCornerValue() for more information on how the pattern databases are
-   * formatted. This method inserts a value into the proper bits in the byte
-   * at the index without modifying the other bits.
+   * formatted. This method inserts a value into the proper four bits in the byte
+   * at the index without modifying the other four bits.
    *
    * @param index   The hash value of this cube state's corners.
    * @param level   The value to be inserted.
