@@ -4,8 +4,24 @@ import java.nio.file.*;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Generates the pattern databases as decribed in Korf's Algorithm using variations
+ * of Depth-First Search, particularly Depth-Limited and Iterative-Deepening.
+ *
+ * @author     Stanley Yang
+ * @version    1.0
+ * @since      2014-11-04
+ */
 class GenerateTables {
-
+  /**
+   * Useful Global Variables.
+   * GOAL_STATE is a String representation of the goal state cube. This is used 
+   * to start generating cubes for placement.
+   * left and right are for bitwise operations for getting and inserting values
+   * into the pattern databases.
+   * corner_values, edge0_values, edge1_values are the pattern databases.
+   * edgesFound and cornersFound are used for keeping track of progress.
+   */
   public static final String GOAL_STATE = "RRRRRRRRRGGGYYYBBBGGGYYYBBBGGGYYYBBBOOOOOOOOOWWWWWWWWW";
 
   static byte left = (byte)0xF0;
@@ -16,6 +32,10 @@ class GenerateTables {
   static long edgesFound = 1;
   static long cornersFound = 1;
 
+  /**
+   * Utility function that prints out how many unfilled indexes there are
+   * in the pattern databases.
+   */
   static void errorCheck(){
     int corners = 0;
     int edge0 = 0;
@@ -51,6 +71,11 @@ class GenerateTables {
     System.out.println("Edge 1: Unfilled: " + edge1_u);
   }
 
+  /**
+   * Initializes the pattern databases to 15 in every index. This is effectively
+   * infinity because the maximum moves needed to solve the corners on a cube is 11
+   * and the maximum moves for solving the edges is 10.
+   */
   static void initValues(){
     for (int i = 0; i < corner_values.length * 2; i++){
       insertCornerValue(i, 15);
@@ -62,6 +87,15 @@ class GenerateTables {
   }
 
 
+  /**
+   * Generates every permutation of the corners and the number of moves used to reach this state.
+   * <p>
+   * The values generated should be the lowest number of moves necessary to solve that particular
+   * permutation of the corners. This search is done by doing a Depth-Limited Search to the defined
+   * limit and storing those nodes at the limit, similar to a fringe in Breadth-First Search. Once
+   * all the nodes above the limit are exhausted. It does a Depth-Limited Search up to 11 moves of
+   * the nodes in this fringe.
+   */
   static void generateCornerValues(){
     Cube c = new Cube(GOAL_STATE);
     c.setLevel(0);
@@ -213,7 +247,6 @@ class GenerateTables {
       int level = current.level;
       int current_edge = current.getEncodedEdges(group);
       if (current_edge == 31805264 && group == 1) current.printCube();
-
       if (getEdgeValue(current_edge, group) > level){
         edgesFound++;
         if(edgesFound % 1000000 == 0) System.out.printf("Passed %d edges found.\n", edgesFound);
@@ -223,7 +256,7 @@ class GenerateTables {
           for(int face = 0; face < 6; face++){
             if (face != current.last_face){
               for(int i = 1; i < 4; i++){
-                Cube node = c.rotate(face, i);
+                Cube node = current.rotate(face, i);
                 int node_edge = node.getEncodedEdges(group);
                 int existing_edge_value = getEdgeValue(node_edge, group);
 
@@ -236,6 +269,9 @@ class GenerateTables {
             }
           }
         }
+      }
+      else {
+        current.printCube();
       }
     }
   }
@@ -445,7 +481,11 @@ class GenerateTables {
     try {
       initValues();
       //generateEdgeValuesID(0);
-      generateEdgeValuesID(1);
+      //generateEdgeValuesID(1);
+      Cube c = new Cube(GOAL_STATE);
+      c.setLevel(0);
+      c.setFace(7);
+      edgeHelper(c, 1);
       //generateCornerValues();
       //generateAllValuesID();
       FileOutputStream output = new FileOutputStream("CornerValues");
