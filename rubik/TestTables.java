@@ -166,5 +166,6 @@ class TestTables {
     System.out.println("Edge0: " + c.getEncodedEdges(0));
     System.out.println("Edge1: " + c.getEncodedEdges(1));
     System.out.printf("Corners: %d, Edge 0: %d , Edge 1, %d\n", getCornerValue(c.getEncodedCorners()), getEdgeValue(c.getEncodedEdges(0), 0), getEdgeValue(c.getEncodedEdges(1), 1));
+    randomCubeTest();
   }
 }
