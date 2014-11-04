@@ -1,9 +1,5 @@
 package rubik;
 
-import java.util.Arrays;
-import java.nio.file.*;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.*;
 
 public class Cube {
