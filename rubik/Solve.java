@@ -46,7 +46,6 @@ class Solve {
     while (true) {
       search(new CubeNode(input_cube, h(input_cube)), threshold, "");
       threshold++;
-      System.out.println("New Threshold: " + threshold);
     }
   }
 
@@ -62,7 +61,7 @@ class Solve {
    * @param moves   The moves used to reach this node.
    */
   static void search(CubeNode cn, int bound, String moves){
-    if (goalTest(cn.cube)) {System.out.println("FOUND IT: " + translateMoves(moves) + " Length: " + moves.length() / 2); System.out.println(new java.util.Date()); System.exit(0);}
+    if (goalTest(cn.cube)) {System.out.println(translateMoves(moves)); System.exit(0);}
     PriorityQueue<CubeNode> children = generateChildren(cn.cube, bound);
     while (children.size() > 0){
       CubeNode n = children.poll();
@@ -220,7 +219,6 @@ class Solve {
       e.printStackTrace();
       System.exit(1);
     }
-    System.out.println("Done loading files");
   }
 
   /**
@@ -289,8 +287,6 @@ class Solve {
       System.out.println("Please Input Filename.");
       System.exit(1);
     }
-
-    System.out.println(new java.util.Date());
     read();
     readInput(args[0]);
     solveCube();
