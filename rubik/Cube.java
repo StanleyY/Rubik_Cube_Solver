@@ -1,7 +1,6 @@
 package rubik;
 
 import java.util.Arrays;
-import java.util.ArrayList;
 
 /**
  * Representation of a Rubik's Cube.
@@ -544,15 +543,21 @@ public class Cube {
    */
   public int getEncodedCorners(){
     int value = 0;
-    ArrayList<Integer> input_list = new ArrayList<Integer>(8);
-    for(int x : this.getCorners()) {
-      input_list.add(x);
-    }
+    int[] corners = this.getCorners();
     int[] weights = new int[]{5040, 720, 120, 24, 6, 2, 1};
-    int[] sequence = new int[7];;
-    for (int j = 0; j < 7; j++){
-      sequence[j] = input_list.indexOf(j);
-      input_list.remove(input_list.indexOf(j));
+    int[] sequence = new int[7];
+    int index = 0;
+
+    int j = 0;
+    while(j < 7){
+      int pos = 0;
+      while(corners[pos] != j) pos++;
+      sequence[index] = pos;
+      for(int i = pos; i < corners.length - 1 - j; i++){
+        corners[i] = corners[i+1]; // Collapsing array.
+      }
+      j++;
+      index++;
     }
 
     for(int i = 0; i < 7; i++){
@@ -574,25 +579,32 @@ public class Cube {
   public int getEncodedEdges(int half){
     int value = 0;
     int[] edgeGroupOrientation = getEdgeOrientation(); // half is either 0 or 1.
-    ArrayList<Integer> input_list = new ArrayList<Integer>(12);
-    for(int x : this.getEdges()) {
-      input_list.add(x);
-    }
-
+    int[] edges = this.getEdges();
 
     int[] weights = new int[]{1774080, 80640, 4032, 224, 14, 1};
     int[] sequence = new int[6];
     int[] orientations = new int[6];
+
     int index = 0;
-    for (int j = 0 + (6 * half); j < 6 + (6 * half); j++){
-      orientations[index] = edgeGroupOrientation[input_list.indexOf(j)];
+    int j = 0 + (6 * half);
+    while(j < 6 + (6 * half)){
+      int pos = 0;
+      while(edges[pos] != j) pos++;
+      orientations[index] = edgeGroupOrientation[pos];
+      j++;
       index++;
     }
 
     index = 0;
-    for (int j = 0 + (6 * half); j < 6 + (6 * half); j++){
-      sequence[index] = input_list.indexOf(j);
-      input_list.remove(input_list.indexOf(j));
+    j = 0 + (6 * half);
+    while(j < 6 + (6 * half)){
+      int pos = 0;
+      while(edges[pos] != j) pos++;
+      sequence[index] = pos;
+      for(int i = pos; i < edges.length - 1; i++){
+        edges[i] = edges[i+1]; // Collapsing array.
+      }
+      j++;
       index++;
     }
 
