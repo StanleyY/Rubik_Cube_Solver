@@ -1,68 +1,118 @@
 package rubik;
 
 import java.util.Arrays;
-import java.nio.file.*;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
 
+/**
+ * Representation of a Rubik's Cube.
+ *
+ * @author     Stanley Yang
+ * @version    1.0
+ * @since      2014-11-04
+ */
 public class Cube {
-/*
-R = 0
-G = 1
-Y = 2
-B = 3
-O = 4
-W = 5
-*/
-
+  /**
+   * Cube's public variables.
+   * cube is a byte[54] that represents all 54 faces on the cube.
+   * The faces in order are R, G, Y, B, O, W or 0, 1, 2, 3, 4, 5.
+   * The face multiplied by 9 will be the first index of that face.
+   * Ex: Front face = 2 * 9 and the next 8 indexes are the front face, 18 - 26.
+   * <p>
+   * level is an optional variable that assigns a number to this cube. This is
+   * typically used to say how many moves were used to generate this cube.
+   * <p>
+   * last_face is an optional variable that indicates what face was turned to
+   * get to this cube. This is used to help decreases the number of rotations
+   * done on this cube by 3 because there is no need to rotate the same face.
+   */
   public byte[] cube;
   public int level;
   public int last_face;
-  public Map<Integer, int[]> rotation_indexes = null;
 
+  /**
+   * Basic constructor for Cube.
+   */
   public Cube(){
     this.cube = new byte[54];
   }
 
-
-  public Cube(char[] input){
-    this.cube = this.generateCube(input);
-  }
-
-
-  public Cube(char[] input, int level){
-    this.cube = this.generateCube(input);
-    this.level = level;
-  }
-
-
+  /**
+   * Generates a Cube from a String. Essentially the same as Cube(char[]).
+   * The String should not be formatted properly yet.
+   *
+   * @param s   String of length 54 containing the cube.
+   */
   public Cube(String s){
     char[] input = s.toCharArray();
     this.cube = this.generateCube(input);
   }
 
+  /**
+   * Generates a Cube from a char array.
+   * The char array should not be formatted properly yet.
+   *
+   * @param input  A char[54] containing the cube.
+   */
+  public Cube(char[] input){
+    this.cube = this.generateCube(input);
+  }
 
+  /**
+   * Generates a Cube from a char array and initializes it with a level.
+   * The char array should not be formatted properly yet.
+   *
+   * @param input  A char[54] containing the cube.
+   * @param level  An integer, generally the number of moves used to get to this cube.
+   */
+  public Cube(char[] input, int level){
+    this.cube = this.generateCube(input);
+    this.level = level;
+  }
+
+  /**
+   * Generates a Cube from a byte array. This is generally used to clone a Cube.
+   *
+   * @param input  A byte[54] containing the cube.
+   */
   public Cube(byte[] input){
     this.cube = this.generateCube(input);
   }
 
-
+  /**
+   * Generates a Cube from a byte array and initializes it with a level.
+   *
+   * @param input  A byte[54] containing the cube.
+   * @param level  An integer, generally the number of moves used to get to this cube.
+   */
   public Cube(byte[] input, int level){
     this.cube = this.generateCube(input);
     this.level = level;
   }
 
-
+  /**
+   * Sets the level variable in the Cube.
+   *
+   * @param level  An integer, generally the number of moves used to get to this cube.
+   */
   public void setLevel(int level){
     this.level = level;
   }
 
+  /**
+   * Sets the last_face variable in the Cube.
+   *
+   * @param last_face  An integer ranging [0,5], should be the face rotated to generate this cube.
+   */
   public void setFace(int face){
     this.last_face = face;
   }
 
-
+  /**
+   * Properly formats the cube from a String or char[] input.
+   *
+   * @param input  Expected to be formatted as from a text file.
+   * @return       A properly formatted cube.
+   */
   private byte[] generateCube(char[] input){
     byte[] output = new byte[54];
 
@@ -99,7 +149,12 @@ W = 5
     return output;
   }
 
-  // Deep cloning the input.
+  /**
+   * Deep clones the input byte array and returns it.
+   *
+   * @param input  A byte[54], should be a valid cube state.
+   * @return       A deep cloned copy of input.
+   */
   private byte[] generateCube(byte[] input){
     byte[] temp = new byte[54];
     for (int i = 0; i < 54; i++){
@@ -108,9 +163,10 @@ W = 5
     return temp;
   }
 
-
+  /**
+   * Prints the cube in a more human readable format.
+   */
   public void printCube() {
-  // Prints the cube in a more human readable format.
   int i = 0;
   while (i < 9){
     if(i % 3 == 0) System.out.printf("\n   ");
@@ -135,7 +191,13 @@ W = 5
   System.out.printf("\n\n");
 }
 
-  // Rotates a face clockwise a given number of turns
+  /**
+   * Rotates a face clockwise a given number of turns
+   *
+   * @param face  The face to be turned.
+   * @param turns The amount of clockwise turns. Should be between 1 - 3.
+   * @return      A new Cube object with the rotation done.
+   */
   public Cube rotate(int face, int turns){
     if (turns < 1 || turns > 3) {throw new IllegalArgumentException("Turns need to be between 1 and 3.");}
     if (face < 0 || face > 5) {throw new IllegalArgumentException("Invalid face, must be between 0 and 5.");}
@@ -159,7 +221,15 @@ W = 5
     return output;
   }
 
-
+  /**
+   * A helper function for rotate(). Rotates the cubies related to the face that was turned.
+   * <p>
+   * rotate() only rotates the stickers on the face requested. This rotates the related stickers.
+   * Example: A rotation of the top face (0) requires the stickers on the back, left, front, right (5,1,2,3)
+   *          to be rotated as well.
+   *
+   * @param face  The face that was turned.
+   */
   private void rotateCubies(int face){
     int[] index_keys = null;
     switch (face) {
@@ -205,7 +275,12 @@ W = 5
     }
   }
 
-
+  /**
+   * A helper function for rotateCubies(). These are the indexes to be rotated corresponding to the switch
+   * statement in rotateCubies().
+   *
+   * @param face  The face that was turned.
+   */
   private int[][] initRotationIndex(int face){
     switch(face) {
       case 0: return new int[][]{new int[]{6,7,8},new int[]{2,1,0}, new int[]{2,1,0}, new int[]{2,1,0}};
@@ -218,6 +293,11 @@ W = 5
     }
   }
 
+  /**
+   * Returns the permutation of corners on this cube.
+   *
+   * @return An int[] containing the permutation of corners.
+   */
   private int[] getCorners() {
     byte[][] corners = new byte[][]{
       {cube[0], cube[9], cube[51]},
@@ -239,10 +319,15 @@ W = 5
     return output;
   }
 
-
+  /**
+   * A helper function to speed up getCorners(). Maps a given corner to a number.
+   * <p>
+   *    0      1      2      3      4      5      6      7
+   * ("GRW", "BRW", "GRY", "BRY", "GOY", "BOY", "GOW", "BOW")
+   *
+   * @return The integer value of a corner.
+   */
   private int getCornersHelper(byte[] b) {
-  //   0      1      2      3      4      5      6      7
-  //("GRW", "BRW", "GRY", "BRY", "GOY", "BOY", "GOW", "BOW")
     if (b[0] == 'B'){
       if (b[1] == 'R'){
         if(b[2] == 'W') return 1; //BRW
@@ -266,12 +351,19 @@ W = 5
   }
 
 
-  // The cube's orientation is originally a base 3 number.
+  /**
+   * Returns the orientation of the corners translated into an integer.
+   * <p>
+   * A corner's orientation can be 0, 1, or 2, depending on orientation.
+   * Therefore this can be seen as a 7 digit base 3 number which we then translate.
+   * This is primarily for getEncodedCorners().
+   *
+   * @return An int representing the orientation. Value ranges from [0, 2186].
+   */
   public int getCornerOrientation(){
     int[] indexes = new int[]{0, 2, 6, 8};
     byte[] base3 = new byte[7];
 
-    // TODO: move this to its own function
     byte[][] corners = new byte[][]{
       {cube[0], cube[9], cube[51]},
       {cube[2], cube[53], cube[29]},
@@ -303,7 +395,11 @@ W = 5
     return total;
   }
 
-
+  /**
+   * Returns the permutation of edges on this cube.
+   *
+   * @return An int[] containing the permutation of edges.
+   */
   private int[] getEdges(){
     byte[][] edges = new byte[][]{
       {cube[1], cube[52]}, {cube[3], cube[10]}, {cube[5], cube[28]}, {cube[7], cube[19]},
@@ -318,10 +414,15 @@ W = 5
     return output;
   }
 
-
+  /**
+   * A helper function to speed up getEdges(). Maps a given edge to a number.
+   * <p>
+   *   0     1     2     3     4      5     6     7    8     9     10    11
+   * ("RW", "GR", "BR", "RY", "GW", "GY", "BY", "BW", "OY", "GO", "BO", "OW");
+   *
+   * @return The integer value of an edge.
+   */
   private int getEdgesHelper(byte a, byte b){
-    //  0     1     2    3     4      5     6    7     8     9     10     11
-    //("RW", "GR", "BR", "RY", "GW", "GY", "BY", "BW", "OY", "GO", "BO", "OW");
     if (a > b){
       a = (byte)(a^b);
       b = (byte)(a^b);
@@ -363,7 +464,13 @@ W = 5
   }
 
 
-
+  /**
+   * Returns the orientations of the edge cubies as an int[].
+   * <p>
+   * An edge can be oriented correctly or incorrectly, 0 or 1.
+   *
+   * @return An int array with the edge cubies orientations.
+   */
   private int[] getEdgeOrientation() {
     int[] edges_values = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
     int index = 0;
@@ -410,7 +517,15 @@ W = 5
     return new int[]{edges_values[11], edges_values[0], edges_values[1], edges_values[4], edges_values[9], edges_values[5], edges_values[6], edges_values[10], edges_values[7], edges_values[2], edges_values[3], edges_values[8]};
   }
 
-
+  /**
+   * Helper function for getEdgeOrientation.
+   * <p>
+   * It is the index the sticker related to a sticker on a given face and index.
+   *
+   * @param face  The face that was checked.
+   * @param index The index that was checked.
+   * @return      The index of the sticker to be checked.
+   */
   public int sideFace(int face, int index){
     if (index == 3) return 1;
     if (index == 5) return 3;
@@ -418,7 +533,15 @@ W = 5
     else return (face == 2) ? 4 : 0;
   }
 
-
+  /**
+   * Hashing method that maps this cube's corners to an integer.
+   * <p>
+   * Generates the value by mapping the permutation to a unique number in the range [0, 40319].
+   * Then multiples it by the total number of values the corner orientations can be and adds the
+   * value of this cube's corner orientations.
+   *
+   * @return    The hashed value of this cube's corners.
+   */
   public int getEncodedCorners(){
     int value = 0;
     ArrayList<Integer> input_list = new ArrayList<Integer>(8);
@@ -439,7 +562,15 @@ W = 5
     return value * 2187 + getCornerOrientation();
   }
 
-
+  /**
+   * Hashing method that maps this cube's edges to an integer.
+   * <p>
+   * Generates the value by using the position and orientation of the first six or last six
+   * edge cubies and then apply a variable weight to each value.
+   *
+   * @param  half Integer value 0 or 1 for the first or second group.
+   * @return      The hashed value of this cube's edges.
+   */
   public int getEncodedEdges(int half){
     int value = 0;
     int[] edgeGroupOrientation = getEdgeOrientation(); // half is either 0 or 1.

@@ -26,7 +26,6 @@ class GenerateTables {
       int val = getCornerValue(i);
       if(val < 0 || val > 11) {
         corners += 1;
-        //System.out.printf("VALUE UNFILLED AT INDEX %d: %d\n", i, val);
       }
     }
     for(int i = 0; i < edge0_values.length * 2; i++){
@@ -45,12 +44,11 @@ class GenerateTables {
         else edge1++;
       }
     }
-    System.out.println("TOTAL UNFILLED CORNERS: " + corners);
-    System.out.println("TOTAL OVER 11 EDGE 0: " + edge0);
-    System.out.println("TOTAL OVER 11 EDGE 1: " + edge1);
-    System.out.println("TOTAL OVER 15 EDGE 0: " + edge0_u);
-    System.out.println("TOTAL OVER 15 EDGE 1: " + edge1_u);
-
+    System.out.println("Total Unfilled Corners: " + corners);
+    System.out.println("Edge 0, Unadmissible: " + edge0);
+    System.out.println("Edge 1, Unadmissible: " + edge1);
+    System.out.println("Edge 0, Unfilled: " + edge0_u);
+    System.out.println("Edge 1: Unfilled: " + edge1_u);
   }
 
   static void initValues(){
@@ -63,65 +61,6 @@ class GenerateTables {
     }
   }
 
-  // Limited DFS attempt,
-  //TODO: reimplement as interative DFS later.
-  // Currently takes ~1 hour 20 minutes.
-  static void generateEdgeValues(){
-    Cube c = new Cube(GOAL_STATE);
-    c.setLevel(0);
-    c.setFace(7);
-    Stack<Cube> s = new Stack<Cube>();
-    Stack<Cube> next = new Stack<Cube>();
-    s.push(c);
-    int limit = 5;
-    while(!s.empty()){
-      Cube current = s.pop();
-      int level = current.level;
-      int edge0_index = current.getEncodedEdges(0);
-      int edge1_index = current.getEncodedEdges(1);
-
-      if (getEdge0Value(edge0_index) > level) {
-        insertEdge0Value(edge0_index, level);
-      }
-      if (getEdge1Value(edge1_index) > level) {
-        insertEdge1Value(edge1_index, level);
-      }
-
-      if (level < 10){ // Max moves is 10.
-        for(int face = 0; face < 6; face++){
-          if (face != current.last_face){
-            for(int i = 1; i < 4; i++){
-              Cube node = current.rotate(face, i);
-              int node_edge0 = node.getEncodedEdges(0);
-              int node_edge1 = node.getEncodedEdges(1);
-              int existing_edge0_value = getEdge0Value(node_edge0);
-              int existing_edge1_value = getEdge1Value(node_edge1);
-
-              if (!(existing_edge0_value < level + 1 && existing_edge1_value < level + 1)){
-                if (edgesFound < Long.MAX_VALUE) edgesFound++;
-                if(edgesFound % 1000000 == 0) System.out.printf("Over %d Edges Found\n", edgesFound);
-                node.setLevel(level + 1);
-                node.setFace(face);
-                if (level + 1 < limit) {
-                  s.push(node);
-                }
-                else {
-                  next.push(node);
-                }
-              }
-            }
-          }
-        }
-      }
-      if(s.empty() && !next.empty()){
-        System.out.println("Starting level: " + limit);
-        s = next;
-        limit = 12;
-        next = new Stack<Cube>();
-      }
-    }
-  }
-
 
   static void generateCornerValues(){
     Cube c = new Cube(GOAL_STATE);
@@ -129,21 +68,13 @@ class GenerateTables {
     Stack<Cube> s = new Stack<Cube>();
     Stack<Cube> next = new Stack<Cube>();
     s.push(c);
-    int limit = 5; // limit of 6 needs ~1.7 gb of RAM to run reasonably. limit of 7 needs >4gb of RAM.
+    int limit = 5; // limit of 5 uses less than 500MB of RAM.
     long found = 1;
     while(!s.empty()){
       Cube current = s.pop();
       int level = current.level;
       int corner_index = current.getEncodedCorners();
-      int current_edge0 = current.getEncodedEdges(0);
-      int current_edge1 = current.getEncodedEdges(1);
 
-      if (getEdge0Value(current_edge0) > level){
-        insertEdge0Value(current_edge0, level);
-      }
-      if (getEdge1Value(current_edge1) > level){
-        insertEdge1Value(current_edge1, level);
-      }
       if (getCornerValue(corner_index) > level) {
         insertCornerValue(corner_index, level);
         if (found < Long.MAX_VALUE) found++;
