@@ -188,7 +188,7 @@ public class Cube {
     i++;
   }
   System.out.printf("\n\n");
-}
+  }
 
   /**
    * Rotates a face clockwise a given number of turns
